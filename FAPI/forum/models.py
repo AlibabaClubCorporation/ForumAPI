@@ -24,6 +24,8 @@ class Phors(models.Model):
     theme = models.ForeignKey( Themes, on_delete = models.CASCADE, related_name = 'phors' )
     creator = models.ForeignKey( User, on_delete = models.SET_NULL, null = True, related_name = 'phors' )
 
+    class Meta:
+        ordering = [ 'date_of_creation', 'title' ]
 
 class Answers(models.Model):
     """
@@ -38,3 +40,6 @@ class Answers(models.Model):
 
     phor = models.ForeignKey( Phors, on_delete = models.CASCADE, related_name = 'answers' )
     creator = models.ForeignKey( User, on_delete = models.CASCADE, related_name = 'answers' )
+
+    class Meta:
+        ordering = [ 'date_of_creation', ]
