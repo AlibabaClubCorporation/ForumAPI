@@ -2,5 +2,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path( '', views.v )
+    path( '', views.PhorAPIView.as_view() )
 ]

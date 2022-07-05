@@ -1,6 +1,9 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+from rest_framework.generics import ListAPIView
+
+from .serializers import ThemeSerializer
+from .models import Themes
 
 
-def v(request):
-    return HttpResponse('dsad')
+class PhorAPIView( ListAPIView ):
+    queryset = Themes.objects.filter( pk = 1 )
+    serializer_class = ThemeSerializer

@@ -57,6 +57,7 @@ class Answers(models.Model):
 
     phor = models.ForeignKey( Phors, on_delete = models.CASCADE, related_name = 'answers' )
     creator = models.ForeignKey( User, on_delete = models.CASCADE, related_name = 'answers' )
+    parent_answer = models.ForeignKey( 'self', on_delete = models.CASCADE, blank = True, null = True, related_name = 'child_answers' )
 
     class Meta:
         ordering = [ 'date_of_creation', ]
