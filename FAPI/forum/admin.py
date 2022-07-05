@@ -28,6 +28,16 @@ class AnswerInline( admin.StackedInline ):
     extra = 0
 
     readonly_fields = ( 'date_of_creation', )
+    fieldsets = (
+        ( None, {
+            'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct')  )
+        }),
+
+        ( 'Content', {
+            'classes' : ( 'collapse', ),
+            'fields' : ( 'content', )
+        })
+    )
 
 
 @admin.register( Themes )
@@ -71,6 +81,27 @@ class PhorsAdmin( admin.ModelAdmin ):
     prepopulated_fields = { 'slug' : ( 'title', ) }
 
     inlines = [AnswerInline, ]
+
+    save_on_top = True
+    save_as = True
+
+
+@admin.register( Answers )
+class AnswersAdmin( admin.ModelAdmin ):
+    list_display = ( 'creator', 'phor', 'date_of_creation', 'is_correct', )
+    list_filter = ( 'date_of_creation', )
+    readonly_fields = ( 'date_of_creation', )
+    
+    fieldsets = (
+        ( None, {
+            'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct')  )
+        }),
+
+        ( 'Content', {
+            'classes' : ( 'collapse', ),
+            'fields' : ( 'content', )
+        })
+    )
 
     save_on_top = True
     save_as = True
