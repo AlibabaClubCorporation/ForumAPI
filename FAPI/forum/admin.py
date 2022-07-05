@@ -27,6 +27,23 @@ class AnswerInline( admin.StackedInline ):
     model = Answers
     extra = 0
 
+    readonly_fields = ( 'date_of_creation', 'parent_answer')
+    fieldsets = (
+        ( None, {
+            'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct'), 'parent_answer'  )
+        }),
+
+        ( 'Content', {
+            'classes' : ( 'collapse', ),
+            'fields' : ( 'content', )
+        })
+    )
+
+class ParentAnswerInline( admin.StackedInline ):
+    model = Answers
+    extra = 0
+
+
     readonly_fields = ( 'date_of_creation', )
     fieldsets = (
         ( None, {
@@ -88,13 +105,13 @@ class PhorsAdmin( admin.ModelAdmin ):
 
 @admin.register( Answers )
 class AnswersAdmin( admin.ModelAdmin ):
-    list_display = ( 'creator', 'phor', 'date_of_creation', 'is_correct', )
+    list_display = ( 'creator', 'phor', 'date_of_creation', 'is_correct', 'parent_answer')
     list_filter = ( 'date_of_creation', )
-    readonly_fields = ( 'date_of_creation', )
+    readonly_fields = ( 'date_of_creation', 'parent_answer' )
     
     fieldsets = (
         ( None, {
-            'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct')  )
+            'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct'), 'parent_answer'  )
         }),
 
         ( 'Content', {
@@ -102,6 +119,8 @@ class AnswersAdmin( admin.ModelAdmin ):
             'fields' : ( 'content', )
         })
     )
+
+    inlines = [ParentAnswerInline, ]
 
     save_on_top = True
     save_as = True
