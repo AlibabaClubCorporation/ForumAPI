@@ -14,12 +14,12 @@ class PhorInline( admin.StackedInline ):
             'fields' : ( ( 'creator', 'theme' ), 'title', 'date_of_creation', ),
         }),
 
-        ( 'Description', {
+        ( 'Содержимое', {
             'classes' : ( 'collapse', ),
             'fields' : ( 'description', )
         }),
 
-        ( 'Options', {
+        ( 'Дополнительно', {
             'classes' : ( 'collapse', ),
             'fields' : ( 'slug', )
         })
@@ -37,7 +37,7 @@ class AnswerInline( admin.StackedInline ):
             'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct'), 'parent_answer'  )
         }),
 
-        ( 'Content', {
+        ( 'Содержимое', {
             'classes' : ( 'collapse', ),
             'fields' : ( 'content', )
         })
@@ -58,7 +58,7 @@ class ParentAnswerInline( admin.StackedInline ):
             'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct')  )
         }),
 
-        ( 'Content', {
+        ( 'Содержимое', {
             'classes' : ( 'collapse', ),
             'fields' : ( 'content', )
         })
@@ -96,12 +96,12 @@ class PhorsAdmin( admin.ModelAdmin ):
             'fields' : ( ( 'creator', 'theme' ), 'title', 'date_of_creation', ),
         }),
 
-        ( 'Description', {
+        ( 'Описание проблемы', {
             'classes' : ( 'collapse', ),
             'fields' : ( 'description', )
         }),
 
-        ( 'Options', {
+        ( 'Дополнительно', {
             'classes' : ( 'collapse', ),
             'fields' : ( 'slug', )
         })
@@ -128,7 +128,7 @@ class AnswersAdmin( admin.ModelAdmin ):
             'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct'), 'parent_answer'  )
         }),
 
-        ( 'Content', {
+        ( 'Содержимое', {
             'classes' : ( 'collapse', ),
             'fields' : ( 'content', )
         })
