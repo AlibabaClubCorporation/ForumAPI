@@ -3,6 +3,8 @@ from .models import *
 
 
 class PhorInline( admin.StackedInline ):
+    """ StackedInline класс фора """
+
     model = Phors 
     extra = 0
 
@@ -24,6 +26,8 @@ class PhorInline( admin.StackedInline ):
     )
 
 class AnswerInline( admin.StackedInline ):
+    """ StackedInline класс ответа """
+
     model = Answers
     extra = 0
 
@@ -40,9 +44,13 @@ class AnswerInline( admin.StackedInline ):
     )
 
 class ParentAnswerInline( admin.StackedInline ):
+    """ StackedInline класс ответа при редактировании другого ответа """
+
     model = Answers
     extra = 0
 
+    verbose_name = 'Дочерний омментарий'
+    verbose_name_plural = 'Дочернии комментарии'
 
     readonly_fields = ( 'date_of_creation', )
     fieldsets = (
@@ -59,6 +67,8 @@ class ParentAnswerInline( admin.StackedInline ):
 
 @admin.register( Themes )
 class ThemesAdmin( admin.ModelAdmin ):
+    """ Регистрация модели темы """
+
     search_fields = ( 'title', )
     list_filter = ( 'title', )
     list_display = ( 'title', )
@@ -72,6 +82,8 @@ class ThemesAdmin( admin.ModelAdmin ):
 
 @admin.register( Phors )
 class PhorsAdmin( admin.ModelAdmin ):
+    """ Регистрация модели фора """
+
     list_display = ( 'title', 'date_of_creation', 'theme', 'creator' )
     list_display_links = ( 'title', )
     list_editable = ( 'theme', )
@@ -105,6 +117,8 @@ class PhorsAdmin( admin.ModelAdmin ):
 
 @admin.register( Answers )
 class AnswersAdmin( admin.ModelAdmin ):
+    """ Регистрация модели ответа """
+
     list_display = ( 'creator', 'phor', 'date_of_creation', 'is_correct', 'parent_answer')
     list_filter = ( 'date_of_creation', )
     readonly_fields = ( 'date_of_creation', 'parent_answer' )
