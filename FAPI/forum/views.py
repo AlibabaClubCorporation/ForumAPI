@@ -6,10 +6,14 @@ from .models import Themes, Phors
 
 
 class ListThemeAPIView( ListAPIView ):
+    """ Класс представления, для отображения списка тем """
+
     queryset = Themes.objects.all()
     serializer_class = ListThemeSerializer
 
 class DetailThemeAPIView( RetrieveAPIView ):
+    """ Класс представления, для отображения подробной информации темы """
+
     queryset = Themes.objects.all()
     serializer_class = ThemeSerializer
     lookup_field = 'slug'
@@ -18,6 +22,8 @@ class DetailThemeAPIView( RetrieveAPIView ):
 
 
 class DetailPhorAPIView( RetrieveAPIView ):
+    """ Класс представления, для отображения подробной информации фора """
+
     queryset = Phors.objects.all()
     serializer_class = PhorSerializer
     lookup_field = 'slug'
