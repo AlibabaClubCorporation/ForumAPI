@@ -17,7 +17,7 @@ class Themes(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse( 'theme', kwargs = { 'theme_slug' : self.slug } )
+        return reverse( 'theme', kwargs = { 'slug_of_theme' : self.slug } )
 
     class Meta:
         verbose_name = 'Тема'
@@ -48,7 +48,7 @@ class Phors(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse( 'phor', kwargs = { 'phor_slug' : self.slug } )
+        return reverse( 'phor', kwargs = { 'slug_of_phor' : self.slug, 'slug_of_theme' : self.theme.slug } )
 
 class Answers(models.Model):
     """
