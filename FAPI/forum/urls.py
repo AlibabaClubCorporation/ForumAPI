@@ -8,6 +8,6 @@ urlpatterns = [
     path( 'themes/create/', views.CreateThemeAPIView.as_view() ),
     path( 'themes/<slug:slug_of_theme>/', views.DetailThemeAPIView.as_view(), name = 'theme' ),
 
-    path( 'themes/<slug:slug_of_theme>/create/', views.CreatePhorAPIView.as_view() ),
+    path( 'phors/create/', views.CreatePhorAPIView.as_view() ),
     path( 'themes/<slug:slug_of_theme>/<slug:slug_of_phor>/', views.DetailPhorAPIView.as_view(), name = 'phor' ),
 ]

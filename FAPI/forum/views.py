@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework import permissions
 
-from .serializers import CreatePhorSerializer, ThemeSerializer, ListThemeSerializer, PhorSerializer, CreateThemeSerializer
+from .serializers import CreateAnswerSerializer, CreatePhorSerializer, ThemeSerializer, ListThemeSerializer, PhorSerializer, CreateThemeSerializer
 from .models import Themes, Phors
 
 
@@ -27,6 +27,7 @@ class CreateThemeAPIView( CreateAPIView ):
     permission_classes = ( permissions.IsAuthenticated, )
 
 
+
 class DetailPhorAPIView( RetrieveAPIView ):
     """ Класс представления, для отображения подробной информации фора """
 
@@ -41,5 +42,13 @@ class CreatePhorAPIView( CreateAPIView ):
     serializer_class = CreatePhorSerializer
     permission_classes = ( permissions.IsAuthenticated, )
 
-    def perform_create(self, serializer):
-        return super().perform_create(serializer)
+
+
+class CreateAnswerAPIView( CreateAPIView ):
+    """ Класс представления, для создания ответов """
+
+    serializer_class = CreateAnswerSerializer
+    permission_classes = ( permissions.IsAuthenticated, )
+
+
+    

@@ -29,7 +29,16 @@ class _AnswerSerializer( serializers.ModelSerializer ):
     class Meta:
         list_serializer_class = _FilterAnswerSerializer
         model = Answers
-        fields = ( 'creator', 'date_of_creation', 'is_correct', 'content', 'child_answers' )
+        fields = ( 'creator', 'date_of_creation', 'is_correct', 'content', 'child_answers', 'pk' )
+
+class CreateAnswerSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для создания экземпляров Answers модели """
+
+    creator = serializers.HiddenField( default = serializers.CurrentUserDefault() )
+
+    class Meta:
+        model = Answers 
+        fields = ( 'content', 'phor', 'parent_answer', 'creator' )
 
 
 
@@ -53,29 +62,16 @@ class PhorSerializer( serializers.ModelSerializer ):
 
     class Meta:
         model = Phors
-        fields = ( 'title', 'creator', 'theme', 'date_of_creation', 'slug', 'description', 'answers' )
+        fields = ( 'title', 'creator', 'theme', 'date_of_creation', 'slug', 'description', 'answers', 'pk' )
 
 class CreatePhorSerializer( serializers.ModelSerializer ):
     """ Сериализатор для создания экземпляра Phors модели """
 
+    creator = serializers.HiddenField( default = serializers.CurrentUserDefault() )
+
     class Meta:
         model = Phors 
-        fields = ( 'title', 'description' )
-
-    def create(self, validated_data):
-        title = validated_data.get( 'title', None )
-        description = validated_data.get( 'description', None )
-        slug_of_phor = slugify( title )
-        creator = self.context['request'].user
-        
-        slug_of_theme = self.context['request'].path.split('/')[2]
-
-        theme = Themes.objects.get( slug = slug_of_theme )
-        
-        phor = Phors.objects.create( title = title, slug = slug_of_phor, description = description, theme = theme, creator = creator )
-
-        return phor
-
+        fields = ( 'title', 'slug', 'description', 'theme', 'creator' )
 
 
 
@@ -86,7 +82,7 @@ class ThemeSerializer( serializers.ModelSerializer ):
 
     class Meta:
         model = Themes 
-        fields = ( 'title', 'slug', 'phors', )
+        fields = ( 'title', 'slug', 'phors', 'pk' )
 
 class ListThemeSerializer( serializers.ModelSerializer ):
     """ Сериализатор для экземпляров Themes модели """
@@ -101,12 +97,4 @@ class CreateThemeSerializer( serializers.ModelSerializer ):
     
     class Meta:
         model = Themes
-        fields = ( 'title', )
-
-    def create(self, validated_data):
-        title = validated_data.get( 'title', None )
-        slug_of_theme = slugify( title )
-        
-        theme = Themes.objects.create( title = title, slug = slug_of_theme )
-
-        return theme
+        fields = ( 'title', 'slug' )
