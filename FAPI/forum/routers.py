@@ -1,5 +1,7 @@
 from rest_framework import routers
 
+
+
 class RouterOfTheme(routers.SimpleRouter): 
     routes = [
         routers.Route(
@@ -26,6 +28,8 @@ class RouterOfTheme(routers.SimpleRouter):
             initkwargs={'suffix': 'Detail'}
         ),
     ]
+
+
 
 
 
