@@ -3,6 +3,7 @@ from rest_framework import permissions
 
 from .serializers import CreateAnswerSerializer, CreatePhorSerializer, ThemeSerializer, ListThemeSerializer, PhorSerializer, CreateThemeSerializer
 from .models import Themes, Phors
+from .paginations import ListPagination
 
 
 
@@ -11,6 +12,7 @@ class ListThemeAPIView( ListAPIView ):
 
     queryset = Themes.objects.all()
     serializer_class = ListThemeSerializer
+    pagination_class = ListPagination
 
 class DetailThemeAPIView( RetrieveAPIView ):
     """ Класс представления, для отображения подробной информации темы """
