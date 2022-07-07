@@ -26,12 +26,10 @@ class ThemeAPIViewSet( viewsets.ModelViewSet ):
         if self.action in ( 'retrieve', 'list' ):
             return ( permissions.AllowAny(), )
         else:
-            return ( permissions.IsAuthenticated(), )
-
+           return ( permissions.IsAuthenticated(), )
 
 
 class PhorAPIViewSet( viewsets.ModelViewSet ):
-    queryset = Phors.objects.all()
     lookup_field = 'slug'
     lookup_url_kwarg = 'slug_of_phor'
 
@@ -46,6 +44,15 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
             return ( permissions.AllowAny(), )
         else:
             return ( permissions.IsAuthenticated(), )
+    
+    def get_queryset(self):
+        if self.action == 'retrieve':
+            slug_of_phor = self.kwargs.get( 'slug_of_phor' )
+            slug_of_theme = self.kwargs.get( 'slug_of_theme' )
+
+            return Phors.objects.filter( slug = slug_of_phor, theme__slug = slug_of_theme )
+        else:
+            return Phors.objects.all()
 
 
 

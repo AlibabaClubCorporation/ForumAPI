@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
 from .models import * 
+from .services.service_of_slug import text_to_slug
+from .services.service_of_data_base import get_theme_by_slug, get_phor_by_theme_and_slug
 
 
 class _FilterAnswerSerializer( serializers.ListSerializer ):
@@ -37,7 +39,16 @@ class CreateAnswerSerializer( serializers.ModelSerializer ):
 
     class Meta:
         model = Answers 
-        fields = ( 'content', 'phor', 'parent_answer', 'creator' )
+        fields = ( 'content', 'parent_answer', 'creator' )
+
+    def create(self, validated_data):
+        slug_of_theme = self.context['view'].kwargs.get( 'slug_of_theme' )
+        slug_of_phor = self.context['view'].kwargs.get( 'slug_of_phor' )
+
+        theme_of_phor = get_theme_by_slug( slug_of_theme )
+        validated_data['phor'] = get_phor_by_theme_and_slug( slug_of_phor, theme_of_phor )
+
+        return super().create(validated_data)
 
 
 
@@ -70,7 +81,15 @@ class CreatePhorSerializer( serializers.ModelSerializer ):
 
     class Meta:
         model = Phors 
-        fields = ( 'title', 'slug', 'description', 'theme', 'creator' )
+        fields = ( 'title', 'description', 'creator' )
+
+    def create(self, validated_data):
+        slug_of_theme = self.context['view'].kwargs.get( 'slug_of_theme' )
+
+        validated_data['slug'] = text_to_slug( validated_data['title'] )
+        validated_data['theme'] = get_theme_by_slug( slug_of_theme )
+
+        return super().create(validated_data)
 
 
 
@@ -96,4 +115,10 @@ class CreateThemeSerializer( serializers.ModelSerializer ):
     
     class Meta:
         model = Themes
-        fields = ( 'title', 'slug' )
+        fields = ( 'title', )
+
+    def create(self, validated_data):
+        validated_data['slug'] = text_to_slug( validated_data['title'] )
+
+        return super().create(validated_data)
+ 
