@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import * 
 
 
@@ -27,7 +28,16 @@ class _AnswerSerializer( serializers.ModelSerializer ):
     class Meta:
         list_serializer_class = _FilterAnswerSerializer
         model = Answers
-        fields = ( 'creator', 'date_of_creation', 'is_correct', 'content', 'child_answers' )
+        fields = ( 'creator', 'date_of_creation', 'is_correct', 'content', 'child_answers', 'pk' )
+
+class CreateAnswerSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для создания экземпляров Answers модели """
+
+    creator = serializers.HiddenField( default = serializers.CurrentUserDefault() )
+
+    class Meta:
+        model = Answers 
+        fields = ( 'content', 'phor', 'parent_answer', 'creator' )
 
 
 
@@ -40,7 +50,7 @@ class _ListPhorSerializer( serializers.ModelSerializer ):
     class Meta:
         model = Phors 
         fields = ( 'title', 'slug', 'theme', 'creator', )
-        
+
 class PhorSerializer( serializers.ModelSerializer ):
     """ Сериализатор для экземпляра Phors модели """
 
@@ -51,7 +61,16 @@ class PhorSerializer( serializers.ModelSerializer ):
 
     class Meta:
         model = Phors
-        fields = ( 'title', 'creator', 'theme', 'date_of_creation', 'slug', 'description', 'answers' )
+        fields = ( 'title', 'creator', 'theme', 'date_of_creation', 'slug', 'description', 'answers', 'pk' )
+
+class CreatePhorSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для создания экземпляра Phors модели """
+
+    creator = serializers.HiddenField( default = serializers.CurrentUserDefault() )
+
+    class Meta:
+        model = Phors 
+        fields = ( 'title', 'slug', 'description', 'theme', 'creator' )
 
 
 
@@ -62,7 +81,7 @@ class ThemeSerializer( serializers.ModelSerializer ):
 
     class Meta:
         model = Themes 
-        fields = ( 'title', 'slug', 'phors', )
+        fields = ( 'title', 'slug', 'phors', 'pk' )
 
 class ListThemeSerializer( serializers.ModelSerializer ):
     """ Сериализатор для экземпляров Themes модели """
@@ -70,3 +89,11 @@ class ListThemeSerializer( serializers.ModelSerializer ):
     class Meta:
         model = Themes 
         fields = ( 'title', 'slug', )
+
+class CreateThemeSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для создания экземпляра Themes модели """
+
+    
+    class Meta:
+        model = Themes
+        fields = ( 'title', 'slug' )
