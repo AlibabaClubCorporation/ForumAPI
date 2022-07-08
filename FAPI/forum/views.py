@@ -1,14 +1,15 @@
-from rest_framework.generics import CreateAPIView
 from rest_framework import viewsets
 from rest_framework import permissions
 
 from .serializers import CreateAnswerSerializer, CreatePhorSerializer, ThemeSerializer, ListThemeSerializer, PhorSerializer, CreateThemeSerializer
-from .models import Themes, Phors
+from .models import *
 from .paginations import ListPagination
 
 
 
 class ThemeAPIViewSet( viewsets.ModelViewSet ):
+    """ Набор представлений, для модели Themes """
+
     queryset = Themes.objects.all()
     pagination_class = ListPagination
     lookup_field = 'slug'
@@ -30,6 +31,8 @@ class ThemeAPIViewSet( viewsets.ModelViewSet ):
 
 
 class PhorAPIViewSet( viewsets.ModelViewSet ):
+    """ Набор представлений, для модели Phors """
+
     lookup_field = 'slug'
     lookup_url_kwarg = 'slug_of_phor'
 
@@ -55,12 +58,9 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
             return Phors.objects.all()
 
 
+class AnswerAPIViewSet( viewsets.ModelViewSet ):
+    """ Набор представлений, для модели Answers """
 
-class CreateAnswerAPIView( CreateAPIView ):
-    """ Класс представления, для создания ответов """
-
+    queryset = Answers.objects.all()
     serializer_class = CreateAnswerSerializer
     permission_classes = ( permissions.IsAuthenticated, )
-
-
-    

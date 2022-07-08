@@ -28,6 +28,14 @@ class RouterOfTheme(routers.SimpleRouter):
             detail=True,
             initkwargs={'suffix': 'Detail'}
         ),
+
+        routers.Route(
+            url=r'^{prefix}/{lookup}/delete-theme/$',
+            mapping={'delete': 'destroy'},
+            name='{basename}-delete',
+            detail=True,
+            initkwargs={'suffix': 'Delete'}
+        ),
     ]
 
 
@@ -49,8 +57,36 @@ class RouterOfPhor( routers.SimpleRouter ):
             detail=True,
             initkwargs={'suffix': 'Detail'}
         ),
+
+        routers.Route(
+            url=r'^{prefix}/(?P<slug_of_theme>[^/.]+)/{lookup}/delete-phor/$',
+            mapping={'delete': 'destroy'},
+            name='{basename}-delete',
+            detail=True,
+            initkwargs={'suffix': 'Delete'}
+        ),
     ]
 
+
+class RouterOfAnswer( routers.SimpleRouter ):
+
+    routes = [
+        routers.Route(
+            url=r'^{prefix}/(?P<slug_of_theme>[^/.]+)/(?P<slug_of_phor>[^/.]+)/create-answer$',
+            mapping={'post': 'create'},
+            name='{basename}-create',
+            detail=True,
+            initkwargs={'suffix': 'Create'}
+        ),
+
+        routers.Route(
+            url=r'^{prefix}/(?P<slug_of_theme>[^/.]+)/(?P<slug_of_phor>[^/.]+)/{lookup}/delete-answer/$',
+            mapping={'delete': 'destroy'},
+            name='{basename}-delete',
+            detail=True,
+            initkwargs={'suffix': 'Delete'}
+        ),
+    ]
 
 
 
