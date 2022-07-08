@@ -1,9 +1,9 @@
 from rest_framework import viewsets
-from rest_framework import permissions
 
 from .serializers import CreateAnswerSerializer, CreatePhorSerializer, ThemeSerializer, ListThemeSerializer, PhorSerializer, CreateThemeSerializer
 from .models import *
 from .paginations import ListPagination
+from . import permissions
 
 
 
@@ -27,7 +27,7 @@ class ThemeAPIViewSet( viewsets.ModelViewSet ):
         if self.action in ( 'retrieve', 'list' ):
             return ( permissions.AllowAny(), )
         else:
-           return ( permissions.IsAuthenticated(), )
+            return ( permissions.IsAdminUser(), )
 
 
 class PhorAPIViewSet( viewsets.ModelViewSet ):
@@ -45,6 +45,8 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
     def get_permissions(self):
         if self.action == 'retrieve':
             return ( permissions.AllowAny(), )
+        elif self.action == 'destroy':
+            return ( permissions.IsOwnerOfPhor(), )
         else:
             return ( permissions.IsAuthenticated(), )
     
@@ -64,3 +66,9 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
     queryset = Answers.objects.all()
     serializer_class = CreateAnswerSerializer
     permission_classes = ( permissions.IsAuthenticated, )
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return ( permissions.IsAuthenticated(), )
+        else:
+            return ( permissions.IsOwnerOfAnswer(), )
