@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 	'djoser',
 
     'forum.apps.ForumConfig',
+    'account_manager.apps.AccountManagerConfig',
 ]
 
 MIDDLEWARE = [

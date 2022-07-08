@@ -24,6 +24,7 @@ class Themes(models.Model):
         verbose_name_plural = 'Темы'
 
 
+
 class Phors(models.Model):
     """
         Класс модели фора
@@ -49,6 +50,8 @@ class Phors(models.Model):
 
     def get_absolute_url(self):
         return reverse( 'phor', kwargs = { 'slug_of_phor' : self.slug, 'slug_of_theme' : self.theme.slug } )
+
+
 
 class Answers(models.Model):
     """
