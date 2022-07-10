@@ -26,8 +26,8 @@ class ThemeAPIViewSet( viewsets.ModelViewSet ):
     def get_permissions(self):
         if self.action in ( 'retrieve', 'list' ):
             return ( permissions.AllowAny(), )
-        else:
-            return ( permissions.IsAdminUser(), )
+        
+        return ( permissions.IsAdminUser(), )
 
 
 
@@ -48,8 +48,8 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
             return ( permissions.AllowAny(), )
         elif self.action == 'destroy':
             return ( permissions.PermissionForDeletePhor(), )
-        else:
-            return ( permissions.IsAuthenticated(), )
+        
+        return ( permissions.IsAuthenticated(), )
     
     def get_queryset(self):
         if self.action == 'retrieve':
@@ -57,8 +57,8 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
             slug_of_theme = self.kwargs.get( 'slug_of_theme' )
 
             return Phors.objects.filter( slug = slug_of_phor, theme__slug = slug_of_theme )
-        else:
-            return Phors.objects.all()
+        
+        return Phors.objects.all()
 
 
 
@@ -71,8 +71,8 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
     def get_permissions(self):
         if self.action == 'create':
             return ( permissions.IsAuthenticated(), )
-        else:
-            return ( permissions.PermissionForDeleteAnswer(), )
+        
+        return ( permissions.PermissionForDeleteAnswer(), )
 
 
 
@@ -87,11 +87,11 @@ class UserOfClientAPIViewSet( viewsets.ModelViewSet ):
     def get_serializer_class(self):
         if self.action in ( 'list', 'retrieve' ):
             return UserOfForumSerializer
-        else:
-            return CreateUserOfForumSerializer
+
+        return CreateUserOfForumSerializer
     
     def get_queryset(self):
         if self.request.user.is_superuser:
             return UsersOfClient.objects.all()
-        else:
-            return get_users_of_client( self.request.user.pk )
+        
+        return get_users_of_client( self.request.user.pk )
