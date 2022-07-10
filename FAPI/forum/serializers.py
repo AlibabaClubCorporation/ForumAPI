@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import * 
 from .services.service_of_slug import text_to_slug
-from .services.service_of_data_base import get_theme_by_slug, get_phor_by_theme_and_slug
+from .services.service_of_data_base import get_theme_by_slug, get_phor_by_theme_and_slug, get_user_of_client_by_pk
 
 
 class _FilterAnswerSerializer( serializers.ListSerializer ):
@@ -35,15 +35,16 @@ class _AnswerSerializer( serializers.ModelSerializer ):
 class CreateAnswerSerializer( serializers.ModelSerializer ):
     """ Сериализатор для создания экземпляров Answers модели """
 
-    creator = serializers.HiddenField( default = serializers.CurrentUserDefault() )
-
     class Meta:
         model = Answers 
-        fields = ( 'content', 'parent_answer', 'creator' )
+        fields = ( 'content', 'parent_answer', )
 
     def create(self, validated_data):
         slug_of_theme = self.context['view'].kwargs.get( 'slug_of_theme' )
         slug_of_phor = self.context['view'].kwargs.get( 'slug_of_phor' )
+        pk_of_user_of_client = self.context['view'].kwargs.get( 'pk_of_user_of_client' )
+
+        validated_data['creator'] = get_user_of_client_by_pk( pk_of_user_of_client )
 
         theme_of_phor = get_theme_by_slug( slug_of_theme )
         validated_data['phor'] = get_phor_by_theme_and_slug( slug_of_phor, theme_of_phor )
@@ -77,14 +78,15 @@ class PhorSerializer( serializers.ModelSerializer ):
 class CreatePhorSerializer( serializers.ModelSerializer ):
     """ Сериализатор для создания экземпляра Phors модели """
 
-    creator = serializers.HiddenField( default = serializers.CurrentUserDefault() )
-
     class Meta:
         model = Phors 
-        fields = ( 'title', 'description', 'creator' )
+        fields = ( 'title', 'description', )
 
     def create(self, validated_data):
         slug_of_theme = self.context['view'].kwargs.get( 'slug_of_theme' )
+        pk_of_user_of_client = self.context['view'].kwargs.get( 'pk_of_user_of_client' )
+
+        validated_data['creator'] = get_user_of_client_by_pk( pk_of_user_of_client )
 
         validated_data['slug'] = text_to_slug( validated_data['title'] )
         validated_data['theme'] = get_theme_by_slug( slug_of_theme )
@@ -124,10 +126,12 @@ class CreateThemeSerializer( serializers.ModelSerializer ):
 
 
 
-class CreateUserOfForumSerializer( serializers.ModelSerializer ):
-
-    client = serializers.HiddenField( default = serializers.CurrentUserDefault() )
+class UserOfForumSerializer( serializers.ModelSerializer ):
 
     class Meta:
         model = UsersOfClient
         fields = '__all__'
+
+class CreateUserOfForumSerializer( UserOfForumSerializer ):
+
+    client = serializers.HiddenField( default = serializers.CurrentUserDefault() )

@@ -13,8 +13,7 @@ class UsersOfClient( models.Model ):
 
     username = models.CharField( verbose_name = 'Имя пользователя клиентского форума', max_length = 255)
     email = models.EmailField( verbose_name = 'Почта пользователя клиентского форума', blank = True, null = True, )
-    password = models.CharField( verbose_name = 'Пароль пользователя клиентского форума', max_length = 24 )
-
+    
     client = models.ForeignKey( verbose_name = 'Клиент пользователя', to = User, on_delete = models.CASCADE, related_name = 'accounts', )
 
 
@@ -51,7 +50,7 @@ class Phors(models.Model):
     date_of_creation = models.DateTimeField( verbose_name = "Дата создания фора", auto_now_add = True, )
 
     theme = models.ForeignKey( verbose_name = "Ссылка на тему фора", to = Themes, on_delete = models.CASCADE, related_name = 'phors' )
-    creator = models.ForeignKey( verbose_name = "Ссылка на создателя фора", to = UsersOfClient, on_delete = models.SET_NULL, null = True, related_name = 'phors' )
+    creator = models.ForeignKey( verbose_name = "Ссылка на создателя фора", to = UsersOfClient, on_delete = models.SET_NULL,  null = True, related_name = 'phors' )
 
     slug = models.SlugField( verbose_name = "Слаг фора", max_length = 256, unique = True, db_index = True, )
 
