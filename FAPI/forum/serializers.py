@@ -121,4 +121,13 @@ class CreateThemeSerializer( serializers.ModelSerializer ):
         validated_data['slug'] = text_to_slug( validated_data['title'] )
 
         return super().create(validated_data)
- 
+
+
+
+class CreateUserOfForumSerializer( serializers.ModelSerializer ):
+
+    client = serializers.HiddenField( default = serializers.CurrentUserDefault() )
+
+    class Meta:
+        model = UsersOfClient
+        fields = '__all__'

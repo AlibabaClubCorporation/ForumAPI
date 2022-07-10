@@ -46,7 +46,7 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
         if self.action == 'retrieve':
             return ( permissions.AllowAny(), )
         elif self.action == 'destroy':
-            return ( permissions.IsOwnerOfPhor(), )
+            return ( permissions.IsOwnerOfPhor(), permissions.IsAdminUser(), )
         else:
             return ( permissions.IsAuthenticated(), )
     
@@ -71,4 +71,4 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
         if self.action == 'create':
             return ( permissions.IsAuthenticated(), )
         else:
-            return ( permissions.IsOwnerOfAnswer(), )
+            return ( permissions.IsOwnerOfAnswer(), permissions.IsAdminUser(), )

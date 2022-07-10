@@ -43,7 +43,6 @@ INSTALLED_APPS = [
 	'djoser',
 
     'forum.apps.ForumConfig',
-    'account_manager.apps.AccountManagerConfig',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +139,5 @@ REST_FRAMEWORK = {
 				'rest_framework.authentication.SessionAuthentication',
 			],
 }
+
+CURRENT_API_VERSION = 'v1.0'

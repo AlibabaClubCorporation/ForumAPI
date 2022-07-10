@@ -1,6 +1,21 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.urls import reverse
+from django.contrib.auth.models import User
+
+
+
+class UsersOfClient( models.Model ):
+    """
+        Модель пользователя клиентского форума
+    """
+
+    client_admin = models.BooleanField( verbose_name = 'Наличие статуса админа у пользователя клиентского форума', default = False )
+
+    username = models.CharField( verbose_name = 'Имя пользователя клиентского форума', max_length = 255)
+    email = models.EmailField( verbose_name = 'Почта пользователя клиентского форума', blank = True, null = True, )
+    password = models.CharField( verbose_name = 'Пароль пользователя клиентского форума', max_length = 24 )
+
+    client = models.ForeignKey( verbose_name = 'Клиент пользователя', to = User, on_delete = models.CASCADE, related_name = 'accounts', )
 
 
 
@@ -36,7 +51,7 @@ class Phors(models.Model):
     date_of_creation = models.DateTimeField( verbose_name = "Дата создания фора", auto_now_add = True, )
 
     theme = models.ForeignKey( verbose_name = "Ссылка на тему фора", to = Themes, on_delete = models.CASCADE, related_name = 'phors' )
-    creator = models.ForeignKey( verbose_name = "Ссылка на создателя фора", to = User, on_delete = models.SET_NULL, null = True, related_name = 'phors' )
+    creator = models.ForeignKey( verbose_name = "Ссылка на создателя фора", to = UsersOfClient, on_delete = models.SET_NULL, null = True, related_name = 'phors' )
 
     slug = models.SlugField( verbose_name = "Слаг фора", max_length = 256, unique = True, db_index = True, )
 
@@ -65,7 +80,7 @@ class Answers(models.Model):
     is_correct = models.BooleanField( verbose_name = "Наличие статуса 'правильный ответ' у ответа", default = False, )
 
     phor = models.ForeignKey( verbose_name = "Ссылка на фор ответа", to = Phors, on_delete = models.CASCADE, related_name = 'answers' )
-    creator = models.ForeignKey( verbose_name = "Ссылка на создателя ответа", to = User, on_delete = models.CASCADE, related_name = 'answers' )
+    creator = models.ForeignKey( verbose_name = "Ссылка на создателя ответа", to = UsersOfClient, on_delete = models.CASCADE, related_name = 'answers' )
     parent_answer = models.ForeignKey( verbose_name = "Ссылка на родительский ответ ответа", to = 'self', on_delete = models.CASCADE, blank = True, null = True, related_name = 'child_answers' )
 
     class Meta:

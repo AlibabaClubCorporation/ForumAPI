@@ -10,10 +10,17 @@ def get_theme_by_slug( slug : str ):
     return Themes.objects.get( slug = slug )
 
 
+
 def get_phor_by_theme_and_slug( slug : str, theme ):
     """ Возвращает фор по теме и слагу """
 
     return Phors.objects.get( slug = slug, theme = theme )
+
+
+
+def get_user_of_client_by_pk( pk_of_user_of_client ):
+    """ Возвразает пользователя клиента по первичному ключу """
+
 
 
 

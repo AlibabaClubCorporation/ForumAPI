@@ -8,7 +8,7 @@ class IsOwnerOfPhor( BasePermission ):
     """ Класс прав доступа | Доступ разрешён, если пользователь владелец записи Phors """
 
     def has_object_permission(self, request, view, obj):
-        if get_or_none( request.user.phors, { 'slug' : obj.slug } ):
+        if get_or_none( request.user.phors, slug = obj.slug ):
             return True
         else:
             return False
