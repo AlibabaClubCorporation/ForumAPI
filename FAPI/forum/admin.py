@@ -1,5 +1,7 @@
 from django.contrib import admin
+
 from .models import *
+
 
 
 class PhorInline( admin.StackedInline ):
@@ -10,7 +12,7 @@ class PhorInline( admin.StackedInline ):
 
     readonly_fields = ( 'date_of_creation', )
     fieldsets = (
-        ( None, {
+        ( 'Общее', {
             'fields' : ( ( 'creator', 'theme' ), 'title', 'date_of_creation', ),
         }),
 
@@ -25,6 +27,7 @@ class PhorInline( admin.StackedInline ):
         })
     )
 
+
 class AnswerInline( admin.StackedInline ):
     """ StackedInline класс ответа """
 
@@ -33,7 +36,7 @@ class AnswerInline( admin.StackedInline ):
 
     readonly_fields = ( 'date_of_creation', 'parent_answer')
     fieldsets = (
-        ( None, {
+        ( 'Общее', {
             'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct'), 'parent_answer'  )
         }),
 
@@ -42,6 +45,7 @@ class AnswerInline( admin.StackedInline ):
             'fields' : ( 'content', )
         })
     )
+
 
 class ParentAnswerInline( admin.StackedInline ):
     """ StackedInline класс ответа при редактировании другого ответа """
@@ -54,7 +58,7 @@ class ParentAnswerInline( admin.StackedInline ):
 
     readonly_fields = ( 'date_of_creation', )
     fieldsets = (
-        ( None, {
+        ( 'Общее', {
             'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct')  )
         }),
 
@@ -63,6 +67,41 @@ class ParentAnswerInline( admin.StackedInline ):
             'fields' : ( 'content', )
         })
     )
+
+
+class LogOfUserOfClientInline( admin.StackedInline ):
+    """ StackedInline класс лога пользователя клиента при редактировании пользователя клиента """
+
+    model = LogOfUserOfClient
+    extra = 0
+
+    verbose_name = 'Лог пользователя клиента'
+    verbose_name_plural = 'Логи пользователя клиента'
+
+    readonly_fields = ( 'date_of_creation', )
+
+    fields = ( ( 'user_of_client', ), ( 'content', ), )
+    
+    save_on_top = True
+
+
+# Класс " LogOfClientInline " нужно привязать к User модели в админ панели, но я не знаю как это можно сделать, и не нашел решения
+
+class LogOfClientInline( admin.StackedInline ):
+    """ StackedInline класс лога клиента при редактировании клиента """
+
+    model = LogOfClient
+    extra = 0
+
+    verbose_name = 'Лог клиента'
+    verbose_name_plural = 'Логи клиента'
+
+    readonly_fields = ( 'date_of_creation', )
+
+    fields = ( ( 'client', ), ( 'content', ), )
+    
+    save_on_top = True
+
 
 
 @admin.register( Themes )
@@ -80,6 +119,7 @@ class ThemesAdmin( admin.ModelAdmin ):
 
     save_on_top = True
 
+
 @admin.register( Phors )
 class PhorsAdmin( admin.ModelAdmin ):
     """ Регистрация модели фора """
@@ -92,7 +132,7 @@ class PhorsAdmin( admin.ModelAdmin ):
     readonly_fields = ( 'date_of_creation', )
     
     fieldsets = (
-        ( None, {
+        ( 'Общее', {
             'fields' : ( ( 'creator', 'theme' ), 'title', 'date_of_creation', ),
         }),
 
@@ -124,7 +164,7 @@ class AnswersAdmin( admin.ModelAdmin ):
     readonly_fields = ( 'date_of_creation', 'parent_answer' )
     
     fieldsets = (
-        ( None, {
+        ( 'Общее', {
             'fields' : ( ( 'phor', 'creator' ), ('date_of_creation', 'is_correct'), 'parent_answer'  )
         }),
 
@@ -140,3 +180,64 @@ class AnswersAdmin( admin.ModelAdmin ):
     save_as = True
 
 
+@admin.register( UsersOfClient )
+class UserOfClientAdmin( admin.ModelAdmin ):
+    list_display = ( 'username', 'email', 'date_of_creation', 'client_admin', 'client', )
+    list_filter = ( 'date_of_creation', )
+    readonly_fields = ( 'date_of_creation', )
+
+    fieldsets = (
+        ( 'Общее', {
+            'fields' : ( ( 'username', 'email' ), ( 'date_of_creation', ), 'client_admin'  )
+        }),
+
+        ( 'Дополнительно', {
+            'classes' : ( 'collapse', ),
+            'fields' : ( 'client', )
+        })
+    )
+
+    inlines = [ LogOfUserOfClientInline, ]
+
+    save_on_top = True
+    save_as = True
+
+
+@admin.register( LogOfClient )
+class LogOfClientAdmin( admin.ModelAdmin ):
+    list_display = ( 'client', 'date_of_creation', )
+    list_filter = ( 'date_of_creation', )
+    readonly_fields = ( 'date_of_creation', )
+
+    fieldsets = (
+        ( 'Общее', {
+            'fields' : ( ( 'client', ), ( 'date_of_creation', ), )
+        }),
+
+        ( 'Содержимое', {
+            'classes' : ( 'collapse', ),
+            'fields' : ( 'content', )
+        })
+    )
+
+    save_on_top = True
+
+
+@admin.register( LogOfUserOfClient )
+class LogOfUserOfClientAdmin( admin.ModelAdmin ):
+    list_display = ( 'user_of_client', 'date_of_creation', )
+    list_filter = ( 'date_of_creation', )
+    readonly_fields = ( 'date_of_creation', )
+
+    fieldsets = (
+        ( 'Общее', {
+            'fields' : ( ( 'user_of_client', ), ( 'date_of_creation', ), )
+        }),
+
+        ( 'Содержимое', {
+            'classes' : ( 'collapse', ),
+            'fields' : ( 'content', )
+        })
+    )
+    
+    save_on_top = True

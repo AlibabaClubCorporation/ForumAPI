@@ -15,7 +15,14 @@ class UsersOfClient( models.Model ):
     username = models.CharField( verbose_name = 'Имя пользователя клиентского форума', max_length = 255)
     email = models.EmailField( verbose_name = 'Почта пользователя клиентского форума', blank = True, null = True, )
     
+    date_of_creation = models.DateTimeField( verbose_name = 'Дата создания пользователя клиента', auto_now_add = True )
+
     client = models.ForeignKey( verbose_name = 'Клиент пользователя', to = User, on_delete = models.CASCADE, related_name = 'accounts', )
+
+    class Meta:
+        ordering = [ 'date_of_creation', 'client', 'username', ]
+        verbose_name = 'Пользователь клиента'
+        verbose_name_plural = 'Пользователи клиентов'
 
 
 
