@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from . import abstract_models 
 
 
 
@@ -86,3 +87,31 @@ class Answers(models.Model):
         ordering = [ 'date_of_creation', ]
         verbose_name = 'Ответ'
         verbose_name_plural = 'Ответы'
+
+
+
+class LogOfClient( abstract_models.Log ):
+    """
+        Класс модели лога клиента ( Записи событий связанных непосредственно с клиентом )
+    """
+
+    client = models.ForeignKey( verbose_name = 'Клиент', to = User, on_delete = models.CASCADE, related_name = 'logs' )
+
+    class Meta:
+        ordering = [ 'date_of_creation', 'client__username', ]
+        verbose_name = 'Лог клиента'
+        verbose_name_plural = 'Логи клиентов'
+
+
+
+class LogOfUserOfClient( abstract_models.Log ):
+    """
+        Класс модели лога пользователя клиента ( Записи событий связанных непосредственно с пользователем клиента )
+    """
+
+    user_of_client = models.ForeignKey( verbose_name = 'Пользователь клиента', to = UsersOfClient, on_delete = models.CASCADE, related_name = 'logs' )
+
+    class Meta:
+        ordering = [ 'date_of_creation', 'user_of_client__client__username', 'user_of_client__username', ]
+        verbose_name = 'Лог пользователя клиента'
+        verbose_name_plural = 'Логи пользователей клиентов'
