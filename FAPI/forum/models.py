@@ -19,6 +19,9 @@ class UsersOfClient( models.Model ):
 
     client = models.ForeignKey( verbose_name = 'Клиент пользователя', to = User, on_delete = models.CASCADE, related_name = 'accounts', )
 
+    def __str__(self) -> str:
+        return self.username
+
     class Meta:
         ordering = [ 'date_of_creation', 'client', 'username', ]
         verbose_name = 'Пользователь клиента'
@@ -34,6 +37,8 @@ class Themes(models.Model):
     title = models.CharField( verbose_name = "Название темы", max_length = 128, unique = True, )
 
     slug = models.SlugField( verbose_name = "Слаг темы", max_length = 256, unique = True, db_index = True, )
+
+    creator = models.ForeignKey( verbose_name = 'Создатель темы', to = User, on_delete = models.SET_NULL, null = True, related_name = 'themes')
 
     def __str__(self):
         return self.title

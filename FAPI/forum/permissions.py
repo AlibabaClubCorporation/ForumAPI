@@ -83,7 +83,7 @@ class PermissionForDeleteAnswer( _StandartPermissionForDeleteMethod ):
     """ Класс прав доступа | Доступ разрешён, если пользователь админ на форуме клиента, или админ API, или враделец фора """
 
     def has_object_permission(self, request, view, obj):
-        result_of_parent_has_object_permission = super().has_object_permission( self, request, view, obj )
+        result_of_parent_has_object_permission = super().has_object_permission( request, view, obj )
         is_owner_of_answer = _IsOwnerOfAnswer.has_object_permission( self, request, view, obj )
 
         if result_of_parent_has_object_permission or is_owner_of_answer:
