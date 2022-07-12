@@ -67,16 +67,16 @@ class Phors(models.Model):
 
     slug = models.SlugField( verbose_name = "Слаг фора", max_length = 256, unique = True, db_index = True, )
 
-    class Meta:
-        ordering = [ 'date_of_creation', 'title' ]
-        verbose_name = 'Фор'
-        verbose_name_plural = 'Форы'
-
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse( 'phor', kwargs = { 'slug_of_phor' : self.slug, 'slug_of_theme' : self.theme.slug } )
+
+    class Meta:
+        ordering = [ 'date_of_creation', 'title' ]
+        verbose_name = 'Фор'
+        verbose_name_plural = 'Форы'
 
 
 
@@ -95,6 +95,9 @@ class Answers(models.Model):
     creator = models.ForeignKey( verbose_name = "Ссылка на создателя ответа", to = UsersOfClient, on_delete = models.CASCADE, related_name = 'answers' )
     parent_answer = models.ForeignKey( verbose_name = "Ссылка на родительский ответ ответа", to = 'self', on_delete = models.CASCADE, blank = True, null = True, related_name = 'child_answers' )
 
+    def __str__(self) -> str:
+        return f'Ответ от {self.creator.username} для фора {self.phor.title}'
+
     class Meta:
         ordering = [ 'date_of_creation', ]
         verbose_name = 'Ответ'
@@ -109,6 +112,9 @@ class LogOfClient( abstract_models.Log ):
 
     client = models.ForeignKey( verbose_name = 'Клиент', to = User, on_delete = models.CASCADE, related_name = 'logs' )
 
+    def __str__(self) -> str:
+        return f'Запись лога клиента {self.client.username}'
+
     class Meta:
         ordering = [ 'date_of_creation', 'client__username', ]
         verbose_name = 'Лог клиента'
@@ -122,6 +128,9 @@ class LogOfUserOfClient( abstract_models.Log ):
     """
 
     user_of_client = models.ForeignKey( verbose_name = 'Пользователь клиента', to = UsersOfClient, on_delete = models.CASCADE, related_name = 'logs' )
+
+    def __str__(self) -> str:
+        return f'Запись лога пользователя клиента {self.user_of_client.username}'
 
     class Meta:
         ordering = [ 'date_of_creation', 'user_of_client__client__username', 'user_of_client__username', ]

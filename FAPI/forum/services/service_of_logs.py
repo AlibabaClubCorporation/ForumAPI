@@ -6,6 +6,7 @@ class ObjectCreationLogs:
     """ Класс объединяющий функции, которые создают логи при создании других объектов """
 
     def create_client( client ):
+        """ Добавляет лог события 'Создание клиента' """
 
         models.LogOfClient.objects.create( 
             client = client,
@@ -13,6 +14,7 @@ class ObjectCreationLogs:
         )
 
     def create_user_of_client( client, user_of_client ):
+        """ Добавляет логи события 'Создание пользователя клиента' """
 
         models.LogOfClient.objects.create( 
             client = client,
@@ -24,6 +26,7 @@ class ObjectCreationLogs:
         )
 
     def create_phor( user_of_client, phor ):
+        """ Добавляет лог события 'Создание фора' """
 
         models.LogOfUserOfClient.objects.create( 
             user_of_client = user_of_client,
@@ -31,6 +34,7 @@ class ObjectCreationLogs:
         )
 
     def create_theme( admin, theme ):
+        """ Добавляет лог события 'Создание темы' """
 
         models.LogOfClient.objects.create( 
             client = admin,
@@ -38,6 +42,7 @@ class ObjectCreationLogs:
         )
              
     def create_answer( user_of_client, answer ):
+        """ Добавляет лог события 'Создание ответа' """
 
         models.LogOfUserOfClient.objects.create(
             user_of_client = user_of_client,
