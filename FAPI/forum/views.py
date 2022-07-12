@@ -1,6 +1,7 @@
 from rest_framework import viewsets
+from rest_framework.generics import ListAPIView
 
-from .serializers import CreateAnswerSerializer, CreatePhorSerializer, CreateUserOfForumSerializer, ThemeSerializer, ListThemeSerializer, PhorSerializer, CreateThemeSerializer, UserOfForumSerializer
+from .serializers import CreateAnswerSerializer, CreatePhorSerializer, ThemeSerializer, ListThemeSerializer, PhorSerializer, CreateThemeSerializer, UserOfClientSerializer, CreateUserOfClientSerializer, LogOfUserOfClientSerializer, LogOfClientSerializer
 from .models import *
 from . import permissions
 
@@ -111,9 +112,9 @@ class UserOfClientAPIViewSet( viewsets.ModelViewSet ):
 
     def get_serializer_class(self):
         if self.action in ( 'list', 'retrieve' ):
-            return UserOfForumSerializer
+            return UserOfClientSerializer
 
-        return CreateUserOfForumSerializer
+        return CreateUserOfClientSerializer
     
     def get_queryset(self):
         if self.request.user.is_superuser:
@@ -128,3 +129,39 @@ class UserOfClientAPIViewSet( viewsets.ModelViewSet ):
         ObjectDeletionLogs.delete_user_of_client( client = client, user_of_client = user_of_client )
 
         return super().destroy(request, *args, **kwargs)
+
+
+
+class LogOfClientAPIView( ListAPIView ):
+    """ Класс представления для модели LogOfClient """
+
+    serializer_class = LogOfClientSerializer
+
+    def get_queryset(self):
+        client = self.request.user
+
+        if client.is_superuser:
+            return LogOfClient.objects.all()
+        else:
+            return LogOfClient.objects.filter( client = client )
+
+
+class LogOfUserOfClientAPIView( ListAPIView ):
+    """ Класс представления для модели LogOfUserOfClient """
+
+    serializer_class = LogOfUserOfClientSerializer
+
+    def get_queryset(self):
+        client = self.request.user
+        user_of_client =  get_user_of_client_by_pk( self.kwargs.get( 'pk_of_user_of_client' ) )
+
+        if client.is_superuser:
+
+            return LogOfUserOfClient.objects.filter( user_of_client = user_of_client )
+        else:
+            # Функция get_user_of_client_by_pk может вернуть None в user_of_client, что-бы не вызывать исключение, но в таком случае ...
+            # user_of_client.client будет вызывать исключение AttributeError, которое не должно ложить проект на лопатки
+            try:
+                return LogOfUserOfClient.objects.filter( user_of_client = user_of_client, user_of_client__client = client )
+            except AttributeError:
+                return LogOfUserOfClient.objects.none()

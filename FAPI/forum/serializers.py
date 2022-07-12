@@ -127,12 +127,31 @@ class CreateThemeSerializer( serializers.ModelSerializer ):
 
 
 
-class UserOfForumSerializer( serializers.ModelSerializer ):
+class UserOfClientSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для экземпляра UserOfClient модели """
 
     class Meta:
         model = UsersOfClient
         fields = '__all__'
 
-class CreateUserOfForumSerializer( UserOfForumSerializer ):
+class CreateUserOfClientSerializer( UserOfClientSerializer ):
+    """ Сериализатор для создания экземпляра UserOfClient модели """
 
     client = serializers.HiddenField( default = serializers.CurrentUserDefault() )
+
+
+
+class LogOfClientSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для экземпляра ( -ов ) LogOfClient модели """
+
+    class Meta:
+        model = LogOfClient
+        fields = '__all__'
+
+
+class LogOfUserOfClientSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для экземпляра ( -ов ) LogOfUserOfClient модели """
+
+    class Meta:
+        model = LogOfUserOfClient
+        fields = '__all__'
