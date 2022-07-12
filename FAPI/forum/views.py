@@ -156,12 +156,6 @@ class LogOfUserOfClientAPIView( ListAPIView ):
         user_of_client =  get_user_of_client_by_pk( self.kwargs.get( 'pk_of_user_of_client' ) )
 
         if client.is_superuser:
-
             return LogOfUserOfClient.objects.filter( user_of_client = user_of_client )
         else:
-            # Функция get_user_of_client_by_pk может вернуть None в user_of_client, что-бы не вызывать исключение, но в таком случае ...
-            # user_of_client.client будет вызывать исключение AttributeError, которое не должно ложить проект на лопатки
-            try:
-                return LogOfUserOfClient.objects.filter( user_of_client = user_of_client, user_of_client__client = client )
-            except AttributeError:
-                return LogOfUserOfClient.objects.none()
+            return LogOfUserOfClient.objects.filter( user_of_client = user_of_client, user_of_client__client = client )
