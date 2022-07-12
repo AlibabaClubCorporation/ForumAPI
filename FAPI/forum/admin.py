@@ -209,7 +209,7 @@ class UserOfClientAdmin( admin.ModelAdmin ):
 class LogOfClientAdmin( admin.ModelAdmin ):
     """ Регистрация модели лога клиента """
 
-    list_display = ( 'client', 'date_of_creation', )
+    list_display = ( 'client', 'date_of_creation', 'content' )
     list_filter = ( 'date_of_creation', )
     readonly_fields = ( 'date_of_creation', )
 
@@ -231,7 +231,7 @@ class LogOfClientAdmin( admin.ModelAdmin ):
 class LogOfUserOfClientAdmin( admin.ModelAdmin ):
     """ Регистрация модели лога пользователя клиента """
 
-    list_display = ( 'user_of_client', 'date_of_creation', )
+    list_display = ( 'user_of_client', 'date_of_creation', 'content' )
     list_filter = ( 'date_of_creation', )
     readonly_fields = ( 'date_of_creation', )
 

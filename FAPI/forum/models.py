@@ -23,7 +23,7 @@ class UsersOfClient( models.Model ):
         return self.username
 
     class Meta:
-        ordering = [ 'date_of_creation', 'client', 'username', ]
+        ordering = [ '-date_of_creation', 'client', 'username', ]
         verbose_name = 'Пользователь клиента'
         verbose_name_plural = 'Пользователи клиентов'
 
@@ -63,7 +63,7 @@ class Phors(models.Model):
     date_of_creation = models.DateTimeField( verbose_name = "Дата создания фора", auto_now_add = True, )
 
     theme = models.ForeignKey( verbose_name = "Ссылка на тему фора", to = Themes, on_delete = models.CASCADE, related_name = 'phors' )
-    creator = models.ForeignKey( verbose_name = "Ссылка на создателя фора", to = UsersOfClient, on_delete = models.SET_NULL,  null = True, related_name = 'phors' )
+    creator = models.ForeignKey( verbose_name = "Ссылка на создателя фора", to = UsersOfClient, on_delete = models.SET_NULL, null = True, related_name = 'phors' )
 
     slug = models.SlugField( verbose_name = "Слаг фора", max_length = 256, unique = True, db_index = True, )
 
@@ -74,7 +74,7 @@ class Phors(models.Model):
         return reverse( 'phor', kwargs = { 'slug_of_phor' : self.slug, 'slug_of_theme' : self.theme.slug } )
 
     class Meta:
-        ordering = [ 'date_of_creation', 'title' ]
+        ordering = [ '-date_of_creation', 'title' ]
         verbose_name = 'Фор'
         verbose_name_plural = 'Форы'
 
@@ -99,7 +99,7 @@ class Answers(models.Model):
         return f'Ответ от {self.creator.username} для фора {self.phor.title}'
 
     class Meta:
-        ordering = [ 'date_of_creation', ]
+        ordering = [ '-date_of_creation', ]
         verbose_name = 'Ответ'
         verbose_name_plural = 'Ответы'
 
@@ -116,7 +116,7 @@ class LogOfClient( abstract_models.Log ):
         return f'Запись лога клиента {self.client.username}'
 
     class Meta:
-        ordering = [ 'date_of_creation', 'client__username', ]
+        ordering = [ '-date_of_creation', 'client__username', ]
         verbose_name = 'Лог клиента'
         verbose_name_plural = 'Логи клиентов'
 
@@ -133,6 +133,6 @@ class LogOfUserOfClient( abstract_models.Log ):
         return f'Запись лога пользователя клиента {self.user_of_client.username}'
 
     class Meta:
-        ordering = [ 'date_of_creation', 'user_of_client__client__username', 'user_of_client__username', ]
+        ordering = [ '-date_of_creation', 'user_of_client__client__username', 'user_of_client__username', ]
         verbose_name = 'Лог пользователя клиента'
         verbose_name_plural = 'Логи пользователей клиентов'

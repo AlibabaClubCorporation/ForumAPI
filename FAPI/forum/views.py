@@ -4,7 +4,8 @@ from .serializers import CreateAnswerSerializer, CreatePhorSerializer, CreateUse
 from .models import *
 from . import permissions
 
-from .services.service_of_data_base import get_users_of_client
+from .services.service_of_data_base import get_users_of_client, get_user_of_client_by_pk, get_answer_by_pk, get_phor_by_slug, get_theme_by_slug
+from .services.service_of_logs import ObjectDeletionLogs
 
 
 
@@ -28,6 +29,14 @@ class ThemeAPIViewSet( viewsets.ModelViewSet ):
             return ( permissions.AllowAny(), )
         
         return ( permissions.IsAdminUser(), )
+    
+    def destroy(self, request, *args, **kwargs):
+        theme = get_theme_by_slug( kwargs.get( 'slug_of_theme' ) )
+        admin = request.user
+
+        ObjectDeletionLogs.delete_theme( admin = admin, theme = theme )
+
+        return super().destroy(request, *args, **kwargs)
 
 
 
@@ -59,6 +68,14 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
             return Phors.objects.filter( slug = slug_of_phor, theme__slug = slug_of_theme )
         
         return Phors.objects.all()
+    
+    def destroy(self, request, *args, **kwargs):
+        phor = get_phor_by_slug( kwargs.get( 'slug_of_phor' ) )
+        user_of_client = get_user_of_client_by_pk( kwargs.get( 'pk_of_user_of_client' ) )
+
+        ObjectDeletionLogs.delete_phor( user_of_client = user_of_client, phor = phor )
+
+        return super().destroy(request, *args, **kwargs)
 
 
 
@@ -73,6 +90,14 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
             return ( permissions.IsAuthenticated(), )
         
         return ( permissions.PermissionForDeleteAnswer(), )
+    
+    def destroy(self, request, *args, **kwargs):
+        answer = get_answer_by_pk( kwargs.get( 'pk' ) )
+        user_of_client = get_user_of_client_by_pk( kwargs.get( 'pk_of_user_of_client' ) )
+
+        ObjectDeletionLogs.delete_answer( user_of_client = user_of_client, answer = answer )
+
+        return super().destroy(request, *args, **kwargs)
 
 
 
@@ -95,3 +120,11 @@ class UserOfClientAPIViewSet( viewsets.ModelViewSet ):
             return UsersOfClient.objects.all()
         
         return get_users_of_client( self.request.user.pk )
+
+    def destroy(self, request, *args, **kwargs):
+        user_of_client = get_user_of_client_by_pk( kwargs.get( 'pk_of_user_of_client' ) )
+        client = request.user
+
+        ObjectDeletionLogs.delete_user_of_client( client = client, user_of_client = user_of_client )
+
+        return super().destroy(request, *args, **kwargs)

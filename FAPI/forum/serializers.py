@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import * 
 from .services.service_of_slug import text_to_slug
-from .services.service_of_data_base import get_theme_by_slug, get_phor_by_theme_and_slug, get_user_of_client_by_pk
+from .services.service_of_data_base import get_theme_by_slug, get_phor_by_slug, get_user_of_client_by_pk
 
 
 class _FilterAnswerSerializer( serializers.ListSerializer ):
@@ -47,7 +47,7 @@ class CreateAnswerSerializer( serializers.ModelSerializer ):
         validated_data['creator'] = get_user_of_client_by_pk( pk_of_user_of_client )
 
         theme_of_phor = get_theme_by_slug( slug_of_theme )
-        validated_data['phor'] = get_phor_by_theme_and_slug( slug_of_phor, theme_of_phor )
+        validated_data['phor'] = get_phor_by_slug( slug_of_phor, theme_of_phor )
 
         return super().create(validated_data)
 
@@ -114,10 +114,11 @@ class ListThemeSerializer( serializers.ModelSerializer ):
 class CreateThemeSerializer( serializers.ModelSerializer ):
     """ Сериализатор для создания экземпляра Themes модели """
 
-    
+    creator = serializers.HiddenField( default = serializers.CurrentUserDefault() )
+
     class Meta:
         model = Themes
-        fields = ( 'title', )
+        fields = ( 'title', 'creator' )
 
     def create(self, validated_data):
         validated_data['slug'] = text_to_slug( validated_data['title'] )

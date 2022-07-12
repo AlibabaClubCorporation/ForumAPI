@@ -54,17 +54,34 @@ class ObjectCreationLogs:
 class ObjectDeletionLogs:
     """ Класс объединяющий функции, которые создают логи при удалении других объектов """
 
-    def delete_client(  ):
-        pass 
+    def delete_user_of_client( client, user_of_client ):
+        """ Добавляет логи события 'Удаление пользователя клиента' """
 
-    def delete_user_of_client(  ):
-        pass
+        models.LogOfClient.objects.create( 
+            client = client,
+            content = f'CLIENT ( username : {client.username} | pk : {client.pk} ) DELETED USER OF CLIENT ( username : {user_of_client.username} | pk : {user_of_client.pk} ) '
+        )
 
-    def delete_phor(  ):
-        pass
+    def delete_phor( user_of_client, phor ):
+        """ Добавляет лог события 'Удаление фора' """
 
-    def delete_theme(  ):
-        pass
+        models.LogOfUserOfClient.objects.create( 
+            user_of_client = user_of_client,
+            content = f'USER OF CLIENT ( username : {user_of_client.username} | pk : {user_of_client.pk} ) DELETED PHOR ( title : {phor.title} | slug : {phor.slug} ) IN THEME ( title : {phor.theme.title} | slug : {phor.theme.slug} )' 
+        )
 
-    def delete_answer(  ):
-        pass
+    def delete_theme( admin, theme ):
+        """ Добавляет лог события 'Удаление темы' """
+
+        models.LogOfClient.objects.create( 
+            client = admin,
+            content = f'ADMIN ( username : {admin.username} | pk : {admin.pk} ) DELETED THEME ( title : {theme.title} | slug : {theme.slug} ) '
+        )
+             
+    def delete_answer( user_of_client, answer ):
+        """ Добавляет лог события 'Удаление ответа' """
+
+        models.LogOfUserOfClient.objects.create(
+            user_of_client = user_of_client,
+            content = f'USER OF CLIENT ( username : {user_of_client.username} | pk : {user_of_client.pk} ) DELETED ANSWER ( pk : {answer.pk} ) IN PHOR ( title : {answer.phor.title} | slug : {answer.phor.slug} ) '
+        )

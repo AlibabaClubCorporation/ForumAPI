@@ -11,11 +11,17 @@ def get_theme_by_slug( slug : str ):
 
 
 
-def get_phor_by_theme_and_slug( slug : str, theme ):
-    """ Возвращает фор по теме и слагу """
+def get_phor_by_slug( slug : str ):
+    """ Возвращает фор по слагу """
 
-    return Phors.objects.get( slug = slug, theme = theme )
+    return Phors.objects.get( slug = slug )
 
+
+
+def get_answer_by_pk( pk : int ):
+    """ Возвращает ответ по первичному ключу """
+
+    return Answers.objects.get( pk = pk )
 
 
 def get_user_of_client_by_pk( pk_of_user_of_client ):
