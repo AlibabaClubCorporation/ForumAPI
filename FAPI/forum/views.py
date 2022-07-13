@@ -1,11 +1,12 @@
+from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 
-from .serializers import CreateAnswerSerializer, CreatePhorSerializer, ThemeSerializer, ListThemeSerializer, PhorSerializer, CreateThemeSerializer, UserOfClientSerializer, CreateUserOfClientSerializer, LogOfUserOfClientSerializer, LogOfClientSerializer
+from .serializers import *
 from .models import *
 from . import permissions
 
-from .services.service_of_data_base import get_users_of_client, get_user_of_client_by_pk, get_answer_by_pk, get_phor_by_slug, get_theme_by_slug
+from .services.service_of_data_base import *
 from .services.service_of_logs import ObjectDeletionLogs
 
 
@@ -31,6 +32,7 @@ class ThemeAPIViewSet( viewsets.ModelViewSet ):
         
         return ( permissions.IsAdminUser(), )
     
+
     def destroy(self, request, *args, **kwargs):
         theme = get_theme_by_slug( kwargs.get( 'slug_of_theme' ) )
         admin = request.user
@@ -52,12 +54,14 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
             return PhorSerializer
         elif self.action == 'create':
             return CreatePhorSerializer
+        
+        return ChangeDescriptionOfPhorSerializer
     
     def get_permissions(self):
         if self.action == 'retrieve':
             return ( permissions.AllowAny(), )
-        elif self.action == 'destroy':
-            return ( permissions.PermissionForDeletePhor(), )
+        elif self.action in ( 'destroy', 'change' ):
+            return ( permissions.SpecialPermissionForPhor(), )
         
         return ( permissions.IsAuthenticated(), )
     
@@ -70,6 +74,7 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
         
         return Phors.objects.all()
     
+
     def destroy(self, request, *args, **kwargs):
         phor = get_phor_by_slug( kwargs.get( 'slug_of_phor' ) )
         user_of_client = get_user_of_client_by_pk( kwargs.get( 'pk_of_user_of_client' ) )
@@ -77,6 +82,19 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
         ObjectDeletionLogs.delete_phor( user_of_client = user_of_client, phor = phor )
 
         return super().destroy(request, *args, **kwargs)
+    
+
+    def change( self, request, slug_of_theme = None, slug_of_phor = None, pk_of_user_of_client = None ):
+        serializer = ChangeDescriptionOfPhorSerializer( data = request.data )
+
+        if serializer.is_valid():
+            serializer.save( slug_of_phor = slug_of_phor )
+
+            return Response( status = 200 )
+        else:
+            return Response( status = 400 )
+
+
 
 
 
@@ -84,13 +102,18 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
     """ Набор представлений, для модели Answers """
 
     queryset = Answers.objects.all()
-    serializer_class = CreateAnswerSerializer
 
     def get_permissions(self):
         if self.action == 'create':
             return ( permissions.IsAuthenticated(), )
         
-        return ( permissions.PermissionForDeleteAnswer(), )
+        return ( permissions.SpecialPermissionForAnswer(), )
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CreateAnswerSerializer
+        
+        return ChangeContentOfAnswerSerializer
     
     def destroy(self, request, *args, **kwargs):
         answer = get_answer_by_pk( kwargs.get( 'pk' ) )
@@ -99,6 +122,16 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
         ObjectDeletionLogs.delete_answer( user_of_client = user_of_client, answer = answer )
 
         return super().destroy(request, *args, **kwargs)
+    
+    def change( self, request, slug_of_theme = None, slug_of_phor = None, pk_of_user_of_client = None, pk = None ):
+        serializer = ChangeContentOfAnswerSerializer( data = request.data )
+
+        if serializer.is_valid():
+            serializer.save( pk_of_answer = pk )
+
+            return Response( status = 200 )
+        else:
+            return Response( status = 400 )
 
 
 
@@ -121,6 +154,7 @@ class UserOfClientAPIViewSet( viewsets.ModelViewSet ):
             return UsersOfClient.objects.all()
         
         return get_users_of_client( self.request.user.pk )
+
 
     def destroy(self, request, *args, **kwargs):
         user_of_client = get_user_of_client_by_pk( kwargs.get( 'pk_of_user_of_client' ) )

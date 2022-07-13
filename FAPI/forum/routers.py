@@ -65,6 +65,14 @@ class RouterOfPhor( routers.SimpleRouter ):
             detail=True,
             initkwargs={'suffix': 'Delete'}
         ),
+
+        routers.Route(
+            url=r'^{prefix}/(?P<slug_of_theme>[^/.]+)/{lookup}/(?P<pk_of_user_of_client>[^/.]+)/change-phor/$',
+            mapping={'post': 'change'},
+            name='{basename}-change',
+            detail=True,
+            initkwargs={'suffix': 'Change'}
+        ),
     ]
 
 
@@ -85,6 +93,14 @@ class RouterOfAnswer( routers.SimpleRouter ):
             name='{basename}-delete',
             detail=True,
             initkwargs={'suffix': 'Delete'}
+        ),
+
+        routers.Route(
+            url=r'^{prefix}/(?P<slug_of_theme>[^/.]+)/(?P<slug_of_phor>[^/.]+)/{lookup}/(?P<pk_of_user_of_client>[^/.]+)/change-answer/$',
+            mapping={'post': 'change'},
+            name='{basename}-change',
+            detail=True,
+            initkwargs={'suffix': 'Change'}
         ),
     ]
 

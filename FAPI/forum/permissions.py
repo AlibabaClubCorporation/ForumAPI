@@ -51,7 +51,7 @@ class IsAdminInForumOfClient( BasePermission ):
 
 
 
-class _StandartPermissionForDeleteMethod( BasePermission ):
+class _StandartSpecialPermissionForModels( BasePermission ):
     """ Стандартный класс прав доступа | Доступ разрешён, если пользователь админ на форуме клиента, или админ API """
 
     def has_object_permission(self, request, view, obj):
@@ -65,7 +65,7 @@ class _StandartPermissionForDeleteMethod( BasePermission ):
 
 
 
-class PermissionForDeletePhor( _StandartPermissionForDeleteMethod ):
+class SpecialPermissionForPhor( _StandartSpecialPermissionForModels ):
     """ Класс прав доступа | Доступ разрешён, если пользователь админ на форуме клиента, или админ API, или враделец фора """
 
     def has_object_permission(self, request, view, obj):
@@ -79,7 +79,7 @@ class PermissionForDeletePhor( _StandartPermissionForDeleteMethod ):
 
 
 
-class PermissionForDeleteAnswer( _StandartPermissionForDeleteMethod ):
+class SpecialPermissionForAnswer( _StandartSpecialPermissionForModels ):
     """ Класс прав доступа | Доступ разрешён, если пользователь админ на форуме клиента, или админ API, или враделец фора """
 
     def has_object_permission(self, request, view, obj):

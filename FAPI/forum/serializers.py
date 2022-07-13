@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import * 
 from .services.service_of_slug import text_to_slug
-from .services.service_of_data_base import get_theme_by_slug, get_phor_by_slug, get_user_of_client_by_pk
+from .services.service_of_data_base import get_answer_by_pk, get_theme_by_slug, get_phor_by_slug, get_user_of_client_by_pk
 
 
 class _FilterAnswerSerializer( serializers.ListSerializer ):
@@ -40,16 +40,26 @@ class CreateAnswerSerializer( serializers.ModelSerializer ):
         fields = ( 'content', 'parent_answer', )
 
     def create(self, validated_data):
-        slug_of_theme = self.context['view'].kwargs.get( 'slug_of_theme' )
         slug_of_phor = self.context['view'].kwargs.get( 'slug_of_phor' )
         pk_of_user_of_client = self.context['view'].kwargs.get( 'pk_of_user_of_client' )
 
         validated_data['creator'] = get_user_of_client_by_pk( pk_of_user_of_client )
 
-        theme_of_phor = get_theme_by_slug( slug_of_theme )
-        validated_data['phor'] = get_phor_by_slug( slug_of_phor, theme_of_phor )
+        validated_data['phor'] = get_phor_by_slug( slug_of_phor )
 
         return super().create(validated_data)
+
+class ChangeContentOfAnswerSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для изменения содержимого ответа """
+
+    class Meta:
+        model = Answers
+        fields = ( 'content', )
+
+    def save(self, **kwargs):
+        answer = get_answer_by_pk( kwargs.get( 'pk_of_answer' ) )
+        answer.content = self.validated_data[ 'content' ]
+        answer.save()
 
 
 
@@ -92,6 +102,18 @@ class CreatePhorSerializer( serializers.ModelSerializer ):
         validated_data['theme'] = get_theme_by_slug( slug_of_theme )
 
         return super().create(validated_data)
+
+class ChangeDescriptionOfPhorSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для изменения содержимого фора """
+
+    class Meta:
+        model = Phors
+        fields = ( 'description', )
+
+    def save(self, **kwargs):
+        phor = get_phor_by_slug( kwargs.get( 'slug_of_phor' ) )
+        phor.description = self.validated_data[ 'description' ]
+        phor.save()
 
 
 
