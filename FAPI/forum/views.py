@@ -144,8 +144,10 @@ class UserOfClientAPIViewSet( viewsets.ModelViewSet ):
     lookup_url_kwarg = 'pk_of_user_of_client'
 
     def get_serializer_class(self):
-        if self.action in ( 'list', 'retrieve' ):
+        if self.action == 'list':
             return UserOfClientSerializer
+        elif self.action == 'retrieve':
+            return DetailUserOfClientSerializer
 
         return CreateUserOfClientSerializer
     
@@ -177,19 +179,4 @@ class LogOfClientAPIView( ListAPIView ):
         if client.is_superuser:
             return LogOfClient.objects.all()
         else:
-            return LogOfClient.objects.filter( client = client )
-
-
-class LogOfUserOfClientAPIView( ListAPIView ):
-    """ Класс представления для модели LogOfUserOfClient """
-
-    serializer_class = LogOfUserOfClientSerializer
-
-    def get_queryset(self):
-        client = self.request.user
-        user_of_client =  get_user_of_client_by_pk( self.kwargs.get( 'pk_of_user_of_client' ) )
-
-        if client.is_superuser:
-            return LogOfUserOfClient.objects.filter( user_of_client = user_of_client )
-        else:
-            return LogOfUserOfClient.objects.filter( user_of_client = user_of_client, user_of_client__client = client )
+            return filter_with_catching_exception( LogOfClient, client = client)

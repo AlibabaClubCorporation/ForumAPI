@@ -149,20 +149,6 @@ class CreateThemeSerializer( serializers.ModelSerializer ):
 
 
 
-class UserOfClientSerializer( serializers.ModelSerializer ):
-    """ Сериализатор для экземпляра UserOfClient модели """
-
-    class Meta:
-        model = UsersOfClient
-        fields = '__all__'
-
-class CreateUserOfClientSerializer( UserOfClientSerializer ):
-    """ Сериализатор для создания экземпляра UserOfClient модели """
-
-    client = serializers.HiddenField( default = serializers.CurrentUserDefault() )
-
-
-
 class LogOfClientSerializer( serializers.ModelSerializer ):
     """ Сериализатор для экземпляра ( -ов ) LogOfClient модели """
 
@@ -177,3 +163,22 @@ class LogOfUserOfClientSerializer( serializers.ModelSerializer ):
     class Meta:
         model = LogOfUserOfClient
         fields = '__all__'
+
+
+
+class UserOfClientSerializer( serializers.ModelSerializer ):
+    """ Сериализатор для экземпляров UserOfClient модели """
+
+    class Meta:
+        model = UsersOfClient
+        fields = '__all__'
+
+class DetailUserOfClientSerializer( UserOfClientSerializer ):
+    """ Сериализатор для экземпляра UserOfClient модели """
+
+    logs = LogOfUserOfClientSerializer( many = True )
+
+class CreateUserOfClientSerializer( UserOfClientSerializer ):
+    """ Сериализатор для создания экземпляра UserOfClient модели """
+
+    client = serializers.HiddenField( default = serializers.CurrentUserDefault() )

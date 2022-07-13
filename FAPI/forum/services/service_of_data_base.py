@@ -5,7 +5,7 @@ from ..models import *
 
 
 def get_or_none( queryset = None, model = None, **kwargs ):
-    """ Возвращает запись из queryset по ключам kwargs, если записи нет, возвращает None """
+    """ Возвращает запись из queryset или model по ключам kwargs, если записи нет, возвращает None """
     
     assert queryset or model
     assert not(queryset and model)
@@ -18,6 +18,11 @@ def get_or_none( queryset = None, model = None, **kwargs ):
     except ObjectDoesNotExist:
         return None
 
+def filter_with_catching_exception( model, **kwargs ):
+    try:
+        return model.objects.filter( **kwargs )
+    except TypeError:
+        return model.objects.none()
 
 
 def get_theme_by_slug( slug : str ):

@@ -15,7 +15,6 @@ urlpatterns = [
     path( '', include( routers.get_router( routers.RouterOfUserOfClient(), views.UserOfClientAPIViewSet, 'client-users', 'user-of-client' ).urls ) ),
 
     path( 'logs_of_client/', views.LogOfClientAPIView.as_view() , name = 'logs_of_client' ),
-    path( 'logs_of_user_of_client/<int:pk_of_user_of_client>/', views.LogOfUserOfClientAPIView.as_view() , name = 'logs_of_user_of_client' ),
 
     path( 'auth/', include( 'djoser.urls' ) ),
 	re_path( r'^auth/', include( 'djoser.urls.authtoken' ) ),
