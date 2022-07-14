@@ -85,3 +85,24 @@ class ObjectDeletionLogs:
             user_of_client = user_of_client,
             content = f'USER OF CLIENT ( username : {user_of_client.username} | pk : {user_of_client.pk} ) DELETED ANSWER ( pk : {answer.pk} ) IN PHOR ( title : {answer.phor.title} | slug : {answer.phor.slug} ) '
         )
+
+
+
+class ObjectChangingLogs:
+    """ Класс объединяющий функции, которые создают логи при удалении других объектов """
+
+    def change_phor( user_of_client, phor, before ):
+        """ Добавляет лог события 'Изменение содержимого фора' """
+
+        models.LogOfUserOfClient.objects.create( 
+            user_of_client = user_of_client,
+            content = f'USER OF CLIENT ( username : {user_of_client.username} | pk : {user_of_client.pk} ) CHANGE PHOR ( title : {phor.title} | slug : {phor.slug} )  |  BEFORE ( description : {before} ) CURRENT ( description : { phor.description } )'
+        )
+
+    def change_answer( user_of_client, answer, before ):
+        """ Добавляет лог события 'Изменение содержимого ответа' """
+
+        models.LogOfUserOfClient.objects.create( 
+            user_of_client = user_of_client,
+            content = f'USER OF CLIENT ( username : {user_of_client.username} | pk : {user_of_client.pk} ) CHANGE AMSWER ( pk : { answer.pk } ) IN PHOR ( title : {answer.phor.title} | slug : {answer.phor.slug} ) |  BEFORE ( content : {before} ) CURRENT ( content : { answer.content } )'
+        )
