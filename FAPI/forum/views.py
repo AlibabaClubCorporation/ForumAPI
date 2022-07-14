@@ -7,7 +7,8 @@ from .models import *
 from . import permissions
 
 from .services.service_of_data_base import *
-from .services.service_of_logs import ObjectDeletionLogs
+from .services.service_of_logs import ObjectChangingLogs, ObjectDeletionLogs
+from .services.service_of_security import check_UserOfClient_belongs_to_client
 
 
 
@@ -58,6 +59,12 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
         return ChangeDescriptionOfPhorSerializer
     
     def get_permissions(self):
+
+        if self.action in ( 'destroy', 'change', 'create' ):
+            if not check_UserOfClient_belongs_to_client( view = self ):
+                return ( permissions.IsAdminUser(), )
+            
+
         if self.action == 'retrieve':
             return ( permissions.AllowAny(), )
         elif self.action in ( 'destroy', 'change' ):
@@ -88,7 +95,13 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
         serializer = ChangeDescriptionOfPhorSerializer( data = request.data )
 
         if serializer.is_valid():
+            phor = get_or_none( model = Phors, slug = slug_of_phor )
+            description_before_changing_phors = phor.description
+            user_of_client = get_user_of_client_by_pk( pk_of_user_of_client )
+
             serializer.save( slug_of_phor = slug_of_phor )
+
+            ObjectChangingLogs.change_phor( user_of_client = user_of_client, phor = phor, before = description_before_changing_phors )
 
             return Response( status = 200 )
         else:
@@ -104,10 +117,17 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
     queryset = Answers.objects.all()
 
     def get_permissions(self):
+        if self.action in ( 'destroy', 'change', 'create' ):
+            if not check_UserOfClient_belongs_to_client( view = self ):
+                return ( permissions.IsAdminUser(), )
+
         if self.action == 'create':
             return ( permissions.IsAuthenticated(), )
+
+        elif self.action in ( 'create', 'change', ):
+            return ( permissions.SpecialPermissionForAnswer(), )
         
-        return ( permissions.SpecialPermissionForAnswer(), )
+        return ( permissions.AllowAny(),)
     
     def get_serializer_class(self):
         if self.action == 'create':
@@ -127,7 +147,13 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
         serializer = ChangeContentOfAnswerSerializer( data = request.data )
 
         if serializer.is_valid():
+            answer = get_or_none( model = Answers, pk = pk )
+            content_before_changing_answer = answer.content
+            user_of_client = get_user_of_client_by_pk( pk_of_user_of_client )
+
             serializer.save( pk_of_answer = pk )
+
+            ObjectChangingLogs.change_answer( user_of_client = user_of_client, answer = answer, before = content_before_changing_answer )
 
             return Response( status = 200 )
         else:
