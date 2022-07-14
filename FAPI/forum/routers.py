@@ -80,7 +80,7 @@ class RouterOfAnswer( routers.SimpleRouter ):
 
     routes = [
         routers.Route(
-            url=r'^{prefix}/(?P<slug_of_theme>[^/.]+)/(?P<slug_of_phor>[^/.]+)/(?P<pk_of_user_of_client>[^/.]+)/create-answer$',
+            url=r'^{prefix}/(?P<slug_of_theme>[^/.]+)/(?P<slug_of_phor>[^/.]+)/(?P<pk_of_user_of_client>[^/.]+)/create-answer/$',
             mapping={'post': 'create'},
             name='{basename}-create',
             detail=True,
