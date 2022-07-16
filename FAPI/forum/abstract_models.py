@@ -16,3 +16,5 @@ class Log( models.Model ):
     
     def get_absolute_url( self ):
         return reverse( 'logs', kwargs = { 'pk_of_log' : self.pk } )
+
+

@@ -18,10 +18,8 @@ class IsAdminUser( BasePermission ):
 class _IsOwnerOfPhor( BasePermission ):
     """ Класс прав доступа | Доступ разрешён, если пользователь владелец записи Phors """
 
-    def has_object_permission(self, request, view, obj):
-        pk_of_user_of_client = view.kwargs.get( 'pk_of_user_of_client' )
-
-        if get_or_none( get_user_of_client_by_pk( pk_of_user_of_client ).phors , slug = obj.slug ):
+    def has_object_permission(self, request, view, obj, **kwargs):
+        if get_or_none( kwargs.get( 'user_of_client' ).phors , slug = obj.slug ):
             return True
 
         return False
@@ -31,10 +29,8 @@ class _IsOwnerOfPhor( BasePermission ):
 class _IsOwnerOfAnswer( BasePermission ):
     """ Класс прав доступа | Доступ разрешён, если пользователь владелец записи Answers """
 
-    def has_object_permission(self, request, view, obj):
-        pk_of_user_of_client = view.kwargs.get( 'pk_of_user_of_client' )
-
-        if get_or_none( get_user_of_client_by_pk( pk_of_user_of_client ).answers, pk = obj.pk ):
+    def has_object_permission(self, request, view, obj, **kwargs):
+        if get_or_none( kwargs.get('user_of_client' ).answers, pk = obj.pk ):
             return True
 
         return False
@@ -44,20 +40,16 @@ class _IsOwnerOfAnswer( BasePermission ):
 class IsAdminInForumOfClient( BasePermission ):
     """ Класс прав доступа | Доступ разрешён, если пользователь админ на форуме клиента """
 
-    def has_object_permission(self, request, view, obj):
-        pk_of_user_of_client = view.kwargs.get( 'pk_of_user_of_client' )
-        
-        return get_admin_status_from_user_of_client( pk_of_user_of_client )
+    def has_object_permission(self, request, view, obj, **kwargs):
+        return get_admin_status_from_user_of_client( kwargs.get('user_of_client') )
     
 
 
 class ObjectIsOwnedByClientOfUser( BasePermission ):
     """ Класс прав доступа | Доступ разрешён, если обьект принадлежит клиенту пользователя совершающего действие """
 
-    def has_object_permission(self, request, view, obj):
-        user_of_client = get_user_of_client_by_pk( view.kwargs.get( 'pk_of_user_of_client' ) )
-
-        if obj.creator.client == user_of_client.client:
+    def has_object_permission(self, request, view, obj, **kwargs):
+        if obj.creator.client == kwargs.get( 'user_of_client' ).client:
             return True 
         
         return False
@@ -67,11 +59,12 @@ class ObjectIsOwnedByClientOfUser( BasePermission ):
 class _StandartSpecialPermissionForModels( BasePermission ):
     """ Стандартный класс прав доступа | Доступ разрешён, если пользователь админ на форуме клиента, или админ API """
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, obj, **kwargs):
         is_admin_user = IsAdminUser.has_permission( self, request, view )
+        user_of_client = kwargs.get( 'user_of_client' )
         
-        if ObjectIsOwnedByClientOfUser.has_object_permission( self, request, view, obj ):
-            is_admin_user_in_forum_of_client = IsAdminInForumOfClient.has_object_permission( self, request, view, obj )
+        if ObjectIsOwnedByClientOfUser.has_object_permission( self, request, view, obj, user_of_client = user_of_client ):
+            is_admin_user_in_forum_of_client = IsAdminInForumOfClient.has_object_permission( self, request, view, obj, user_of_client = user_of_client )
         else:
             is_admin_user_in_forum_of_client = False
 
@@ -85,9 +78,11 @@ class _StandartSpecialPermissionForModels( BasePermission ):
 class SpecialPermissionForPhor( _StandartSpecialPermissionForModels ):
     """ Класс прав доступа | Доступ разрешён, если пользователь админ на форуме клиента, или админ API, или враделец фора """
 
-    def has_object_permission(self, request, view, obj):
-        result_of_parent_has_object_permission = super().has_object_permission( request, view, obj )
-        is_owner_of_phor = _IsOwnerOfPhor.has_object_permission( self, request, view, obj )
+    def has_object_permission(self, request, view, obj, **kwargs):
+        user_of_client = kwargs.get( 'user_of_client' )
+
+        result_of_parent_has_object_permission = super().has_object_permission( request, view, obj, user_of_client = user_of_client )
+        is_owner_of_phor = _IsOwnerOfPhor.has_object_permission( self, request, view, obj, user_of_client = user_of_client )
 
         if result_of_parent_has_object_permission or is_owner_of_phor:
             return True
@@ -98,16 +93,19 @@ class SpecialPermissionForPhor( _StandartSpecialPermissionForModels ):
         """ Наверное очень странное решение. Я не знаю как action 'change' заставить вызывать у permissions метод has_object_permission """
 
         obj = get_phor_by_slug( view.kwargs.get( 'slug_of_phor' ) )
-        return self.has_object_permission( request, view, obj )
+        user_of_client = get_user_of_client_by_pk( view.kwargs.get( 'pk_of_user_of_client' ) )
+        return self.has_object_permission( request, view, obj, user_of_client = user_of_client )
 
 
 
 class SpecialPermissionForAnswer( _StandartSpecialPermissionForModels ):
     """ Класс прав доступа | Доступ разрешён, если пользователь админ на форуме клиента, или админ API, или враделец фора """
 
-    def has_object_permission(self, request, view, obj):
-        result_of_parent_has_object_permission = super().has_object_permission( request, view, obj )
-        is_owner_of_answer = _IsOwnerOfAnswer.has_object_permission( self, request, view, obj )
+    def has_object_permission(self, request, view, obj, **kwargs):
+        user_of_client = kwargs.get( 'user_of_client' )
+
+        result_of_parent_has_object_permission = super().has_object_permission( request, view, obj, user_of_client = user_of_client )
+        is_owner_of_answer = _IsOwnerOfAnswer.has_object_permission( self, request, view, obj, user_of_client = user_of_client )
 
         if result_of_parent_has_object_permission or is_owner_of_answer:
             return True
@@ -118,7 +116,8 @@ class SpecialPermissionForAnswer( _StandartSpecialPermissionForModels ):
         """ Наверное очень странное решение. Я не знаю как action 'change' заставить вызывать у permissions метод has_object_permission """
 
         obj = get_answer_by_pk( view.kwargs.get( 'pk' ) )
-        return self.has_object_permission( request, view, obj )
+        user_of_client = get_user_of_client_by_pk( view.kwargs.get( 'pk_of_user_of_client' ) )
+        return self.has_object_permission( request, view, obj, user_of_client = user_of_client )
 
 
 

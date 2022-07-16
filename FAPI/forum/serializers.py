@@ -24,8 +24,8 @@ class _ChildAnswerSerializer( serializers.Serializer ):
 class _AnswerSerializer( serializers.ModelSerializer ):
     """ Сериализатор для Answers """
 
+    creator = serializers.SlugRelatedField( slug_field = 'username', read_only = True)
     child_answers = _ChildAnswerSerializer( many = True )
-    creator = serializers.SlugRelatedField( slug_field = 'username', read_only = True ) 
 
     class Meta:
         list_serializer_class = _FilterAnswerSerializer
@@ -66,12 +66,11 @@ class ChangeContentOfAnswerSerializer( serializers.ModelSerializer ):
 class _ListPhorSerializer( serializers.ModelSerializer ):
     """ Сериализатор для экземпляров Phors модели """
 
-    theme = serializers.SlugRelatedField( slug_field = 'slug', read_only = True )
-    creator = serializers.SlugRelatedField( slug_field = 'username', read_only = True )
+    creator = serializers.SlugRelatedField( slug_field = 'username', read_only = True)
 
     class Meta:
         model = Phors 
-        fields = ( 'title', 'slug', 'theme', 'creator', )
+        fields = ( 'title', 'slug', 'creator', )
 
 class PhorSerializer( serializers.ModelSerializer ):
     """ Сериализатор для экземпляра Phors модели """
@@ -79,7 +78,7 @@ class PhorSerializer( serializers.ModelSerializer ):
     answers = _AnswerSerializer( many = True )
 
     theme = serializers.SlugRelatedField( slug_field = 'slug', read_only = True )
-    creator = serializers.SlugRelatedField( slug_field = 'username', read_only = True )
+    creator = serializers.SlugRelatedField( slug_field = 'username', read_only = True)
 
     class Meta:
         model = Phors

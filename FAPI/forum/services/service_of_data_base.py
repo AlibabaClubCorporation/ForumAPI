@@ -50,12 +50,17 @@ def get_user_of_client_by_pk( pk ):
 
     return get_or_none( model = UsersOfClient, pk = pk )
 
+# def get_user_of_client_by_pk_with_related( pk, related ):
+#     """ Возвращает пользователя клиента по ключу pk и первичную модель указанную в related вмести """
+
+#     return UsersOfClient.objects.get( pk = pk ).select_related( related )
 
 
-def get_admin_status_from_user_of_client( pk ):
+
+def get_admin_status_from_user_of_client( user_of_client ):
     """ Возвращает наличие статуса админа у пользователя клиента взятого по первичному ключу """
 
-    return get_user_of_client_by_pk( pk ).client_admin
+    return user_of_client.client_admin
 
 
 

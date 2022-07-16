@@ -1,3 +1,5 @@
+from django.db.models import Prefetch
+
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
@@ -15,7 +17,7 @@ from .services.service_of_security import check_UserOfClient_belongs_to_client
 class ThemeAPIViewSet( viewsets.ModelViewSet ):
     """ Набор представлений, для модели Themes """
 
-    queryset = Themes.objects.all()
+    queryset = Themes.objects.all().prefetch_related( 'phors__creator' )
     lookup_field = 'slug'
     lookup_url_kwarg = 'slug_of_theme'
 
@@ -50,6 +52,8 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
     lookup_field = 'slug'
     lookup_url_kwarg = 'slug_of_phor'
 
+    queryset = Phors.objects.all().select_related( 'creator', 'theme', )
+
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return PhorSerializer
@@ -71,15 +75,6 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
             return ( permissions.SpecialPermissionForPhor(), )
         
         return ( permissions.IsAuthenticated(), )
-    
-    def get_queryset(self):
-        if self.action == 'retrieve':
-            slug_of_phor = self.kwargs.get( 'slug_of_phor' )
-            slug_of_theme = self.kwargs.get( 'slug_of_theme' )
-
-            return Phors.objects.filter( slug = slug_of_phor, theme__slug = slug_of_theme )
-        
-        return Phors.objects.all()
     
 
     def destroy(self, request, *args, **kwargs):
