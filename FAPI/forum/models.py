@@ -96,7 +96,9 @@ class Answers(models.Model):
     parent_answer = models.ForeignKey( verbose_name = "Ссылка на родительский ответ ответа", to = 'self', on_delete = models.CASCADE, blank = True, null = True, related_name = 'child_answers' )
 
     def __str__(self) -> str:
-        return f'Ответ от {self.creator.username} для фора {self.phor.title} | PK : {self.pk}'
+        # Данный вариант на страницу answer-create вызывает n + 2 запросов. Отложенно до решения по оптимизации
+        # return f'Ответ от {self.creator.username} для фора {self.phor.title} | PK : {self.pk}'
+        return f'Ответ | PK : {self.pk}'
 
     class Meta:
         ordering = [ '-date_of_creation', ]

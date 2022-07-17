@@ -52,7 +52,12 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
     lookup_field = 'slug'
     lookup_url_kwarg = 'slug_of_phor'
 
-    queryset = Phors.objects.all().select_related( 'creator', 'theme', )
+    queryset = Phors.objects.select_related( 'creator', 'theme', ).prefetch_related( 
+        Prefetch( 
+            'answers',
+            Answers.objects.select_related( 'creator' )
+        )
+    )
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -109,18 +114,24 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
 class AnswerAPIViewSet( viewsets.ModelViewSet ):
     """ Набор представлений, для модели Answers """
 
-    queryset = Answers.objects.all()
+    queryset = Answers.objects.select_related( 'creator', 'phor' )
 
     def get_permissions(self):
+        pk_of_user_of_client = self.kwargs.get( 'pk_of_user_of_client' )
+        user_of_client = get_user_of_client_by_pk( pk_of_user_of_client )
+
+        self.kwargs['user_of_client'] = user_of_client
+        client = self.request.user
+
         if self.action in ( 'destroy', 'change', 'create' ):
-            if not check_UserOfClient_belongs_to_client( view = self ):
+            if not check_UserOfClient_belongs_to_client( client = client, user_of_client = user_of_client ):
                 return ( permissions.IsAdminUser(), )
 
-        if self.action == 'create':
-            return ( permissions.IsAuthenticated(), )
+            elif self.action == 'create':
+                return ( permissions.IsAuthenticated(), )
 
-        elif self.action in ( 'create', 'change', ):
-            return ( permissions.SpecialPermissionForAnswer(), )
+            elif self.action in ( 'destroy', 'change', ):
+                return ( permissions.SpecialPermissionForAnswer(), )
         
         return ( permissions.AllowAny(),)
     

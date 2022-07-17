@@ -1,36 +1,36 @@
+from email.policy import default
 from rest_framework import serializers
 
 from .models import * 
 from .services.service_of_slug import text_to_slug
 from .services.service_of_data_base import get_answer_by_pk, get_theme_by_slug, get_phor_by_slug, get_user_of_client_by_pk
 
+# Рекурсия дочерних ответов вызывает проблемы с оптимизацией sql запросов. по этому отложена до поиска решений
 
-class _FilterAnswerSerializer( serializers.ListSerializer ):
-    """ Класс сериализатора, который убирает из общего списка Answers записи c parent_answer != None """
+# class _FilterAnswerSerializer( serializers.ListSerializer ):
+#     """ Класс сериализатора, который убирает из общего списка Answers записи c parent_answer != None """
 
-    def to_representation(self, data):
-        data = data.filter( parent_answer = None )
+#     def to_representation(self, data):
+#         data = data.filter( parent_answer = None )
 
-        return super().to_representation(data)
+#         return super().to_representation(data)
 
-class _ChildAnswerSerializer( serializers.Serializer ):
-    """ Сериализатор для рекурсии и отображения дочерних Answers """
+# class _ChildAnswerSerializer( serializers.Serializer ):
+#     """ Сериализатор для рекурсии и отображения дочерних Answers """
 
-    def to_representation(self, value):
-        serializer = _AnswerSerializer( value, context = self.context )
+#     def to_representation(self, value):
+#         serializer = _AnswerSerializer( value, context = self.context )
 
-        return serializer.data
+#         return serializer.data
 
 class _AnswerSerializer( serializers.ModelSerializer ):
     """ Сериализатор для Answers """
 
     creator = serializers.SlugRelatedField( slug_field = 'username', read_only = True)
-    child_answers = _ChildAnswerSerializer( many = True )
 
     class Meta:
-        list_serializer_class = _FilterAnswerSerializer
         model = Answers
-        fields = ( 'creator', 'date_of_creation', 'is_correct', 'content', 'child_answers', 'pk' )
+        fields = ( 'creator', 'date_of_creation', 'is_correct', 'content', 'parent_answer', 'pk' )
 
 class CreateAnswerSerializer( serializers.ModelSerializer ):
     """ Сериализатор для создания экземпляров Answers модели """
@@ -41,9 +41,8 @@ class CreateAnswerSerializer( serializers.ModelSerializer ):
 
     def create(self, validated_data):
         slug_of_phor = self.context['view'].kwargs.get( 'slug_of_phor' )
-        pk_of_user_of_client = self.context['view'].kwargs.get( 'pk_of_user_of_client' )
 
-        validated_data['creator'] = get_user_of_client_by_pk( pk_of_user_of_client )
+        validated_data['creator'] = self.context['view'].kwargs.get( 'user_of_client' )
 
         validated_data['phor'] = get_phor_by_slug( slug_of_phor )
 
