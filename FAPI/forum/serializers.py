@@ -45,7 +45,7 @@ class CreateAnswerSerializer( serializers.ModelSerializer ):
     def create(self, validated_data):
         slug_of_phor = self.context['view'].kwargs.get( 'slug_of_phor' )
 
-        validated_data['creator'] = self.context['view'].kwargs.get( 'user_of_client' )
+        validated_data['creator'] = get_user_of_client_by_pk( self.context['view'].kwargs.get( 'pk_of_user_of_client' ) )
 
         validated_data['phor'] = get_phor_by_slug( slug_of_phor )
 
@@ -96,7 +96,7 @@ class CreatePhorSerializer( serializers.ModelSerializer ):
     def create(self, validated_data):
         slug_of_theme = self.context['view'].kwargs.get( 'slug_of_theme' )
 
-        validated_data['creator'] = self.context['view'].kwargs.get( 'user_of_client' )
+        validated_data['creator'] = get_user_of_client_by_pk( self.context['view'].kwargs.get( 'pk_of_user_of_client' ) )
 
         validated_data['slug'] = text_to_slug( validated_data['title'] )
         validated_data['theme'] = get_theme_by_slug( slug_of_theme )
