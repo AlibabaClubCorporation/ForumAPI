@@ -1,7 +1,7 @@
 from rest_framework.permissions import BasePermission, IsAuthenticated, AllowAny
-    # Не удалять не используемые импорты. Они испольщуются в views.py
 
-from .services.service_of_data_base import get_admin_status_from_user_of_client, get_answer_by_pk, get_or_none, get_phor_by_slug, get_user_of_client_by_pk
+from .services.service_of_security import check_UserOfClient_belongs_to_client
+from .services.service_of_data_base import get_admin_status_from_user_of_client, get_answer_by_pk, get_or_none, get_phor_by_slug, get_user_of_client_by_pk, get_user_of_client_by_pk_with_related
 
 
 
@@ -62,7 +62,7 @@ class _StandartSpecialPermissionForModels( BasePermission ):
     def has_object_permission(self, request, view, obj, **kwargs):
         is_admin_user = IsAdminUser.has_permission( self, request, view )
         user_of_client = kwargs.get( 'user_of_client' )
-        
+
         if ObjectIsOwnedByClientOfUser.has_object_permission( self, request, view, obj, user_of_client = user_of_client ):
             is_admin_user_in_forum_of_client = IsAdminInForumOfClient.has_object_permission( self, request, view, obj, user_of_client = user_of_client )
         else:
@@ -83,9 +83,11 @@ class SpecialPermissionForPhor( _StandartSpecialPermissionForModels ):
 
         result_of_parent_has_object_permission = super().has_object_permission( request, view, obj, user_of_client = user_of_client )
         is_owner_of_phor = _IsOwnerOfPhor.has_object_permission( self, request, view, obj, user_of_client = user_of_client )
+        user_of_client_belongs_to_client = UserOfClientBelongsToClient.has_permission( self, request, view, user_of_client = user_of_client )
 
         if result_of_parent_has_object_permission or is_owner_of_phor:
-            return True
+            if user_of_client_belongs_to_client:
+                return True
         
         return False
     
@@ -93,7 +95,7 @@ class SpecialPermissionForPhor( _StandartSpecialPermissionForModels ):
         """ Наверное очень странное решение. Я не знаю как action 'change' заставить вызывать у permissions метод has_object_permission """
 
         obj = get_phor_by_slug( view.kwargs.get( 'slug_of_phor' ) )
-        user_of_client = get_user_of_client_by_pk( view.kwargs.get( 'pk_of_user_of_client' ) )
+        user_of_client = get_user_of_client_by_pk_with_related( view.kwargs.get( 'pk_of_user_of_client' ), 'client' )
         return self.has_object_permission( request, view, obj, user_of_client = user_of_client )
 
 
@@ -106,9 +108,11 @@ class SpecialPermissionForAnswer( _StandartSpecialPermissionForModels ):
 
         result_of_parent_has_object_permission = super().has_object_permission( request, view, obj, user_of_client = user_of_client )
         is_owner_of_answer = _IsOwnerOfAnswer.has_object_permission( self, request, view, obj, user_of_client = user_of_client )
+        user_of_client_belongs_to_client = UserOfClientBelongsToClient.has_permission( self, request, view, user_of_client = user_of_client )
 
         if result_of_parent_has_object_permission or is_owner_of_answer:
-            return True
+            if user_of_client_belongs_to_client:
+                return True
 
         return False
     
@@ -118,6 +122,14 @@ class SpecialPermissionForAnswer( _StandartSpecialPermissionForModels ):
         obj = get_answer_by_pk( view.kwargs.get( 'pk' ) )
         user_of_client = get_user_of_client_by_pk( view.kwargs.get( 'pk_of_user_of_client' ) )
         return self.has_object_permission( request, view, obj, user_of_client = user_of_client )
+
+
+class UserOfClientBelongsToClient( BasePermission ):
+    """ Класс доступа | Доступ разрешён, если пользователь клиента принадлежит к использующему его клиенту """
+
+    def has_permission(self, request, view, **kwargs):
+        return check_UserOfClient_belongs_to_client( client = request.user, user_of_client = kwargs.get( 'user_of_client' ) )
+
 
 
 

@@ -46,6 +46,7 @@ class ThemeAPIViewSet( viewsets.ModelViewSet ):
 
 
 
+
 class PhorAPIViewSet( viewsets.ModelViewSet ):
     """ Набор представлений, для модели Phors """
 
@@ -68,12 +69,6 @@ class PhorAPIViewSet( viewsets.ModelViewSet ):
         return ChangeDescriptionOfPhorSerializer
     
     def get_permissions(self):
-
-        if self.action in ( 'destroy', 'change', 'create' ):
-            if not check_UserOfClient_belongs_to_client( view = self ):
-                return ( permissions.IsAdminUser(), )
-            
-
         if self.action == 'retrieve':
             return ( permissions.AllowAny(), )
         elif self.action in ( 'destroy', 'change' ):
@@ -117,21 +112,11 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
     queryset = Answers.objects.select_related( 'creator', 'phor' )
 
     def get_permissions(self):
-        pk_of_user_of_client = self.kwargs.get( 'pk_of_user_of_client' )
-        user_of_client = get_user_of_client_by_pk( pk_of_user_of_client )
+        if self.action == 'create':
+            return ( permissions.IsAuthenticated(), )
 
-        self.kwargs['user_of_client'] = user_of_client
-        client = self.request.user
-
-        if self.action in ( 'destroy', 'change', 'create' ):
-            if not check_UserOfClient_belongs_to_client( client = client, user_of_client = user_of_client ):
-                return ( permissions.IsAdminUser(), )
-
-            elif self.action == 'create':
-                return ( permissions.IsAuthenticated(), )
-
-            elif self.action in ( 'destroy', 'change', ):
-                return ( permissions.SpecialPermissionForAnswer(), )
+        elif self.action in ( 'destroy', 'change', ):
+            return ( permissions.SpecialPermissionForAnswer(), )
         
         return ( permissions.AllowAny(),)
     
@@ -170,7 +155,6 @@ class AnswerAPIViewSet( viewsets.ModelViewSet ):
 class UserOfClientAPIViewSet( viewsets.ModelViewSet ):
     """ Набор представлений, для модели UserOfClient """
 
-    queryset = UsersOfClient.objects.all()
     permission_classes = ( permissions.IsAuthenticated, )
 
     lookup_url_kwarg = 'pk_of_user_of_client'
@@ -184,9 +168,6 @@ class UserOfClientAPIViewSet( viewsets.ModelViewSet ):
         return CreateUserOfClientSerializer
     
     def get_queryset(self):
-        if self.request.user.is_superuser:
-            return UsersOfClient.objects.all()
-        
         return get_users_of_client( self.request.user.pk )
 
 

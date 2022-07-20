@@ -50,10 +50,10 @@ def get_user_of_client_by_pk( pk ):
 
     return get_or_none( model = UsersOfClient, pk = pk )
 
-# def get_user_of_client_by_pk_with_related( pk, related ):
-#     """ Возвращает пользователя клиента по ключу pk и первичную модель указанную в related вмести """
+def get_user_of_client_by_pk_with_related( pk, related ):
+    """ Возвращает пользователя клиента по ключу pk и первичную модель указанную в related вмести """
 
-#     return UsersOfClient.objects.get( pk = pk ).select_related( related )
+    return UsersOfClient.objects.filter( pk = pk ).select_related( related )[0]
 
 
 

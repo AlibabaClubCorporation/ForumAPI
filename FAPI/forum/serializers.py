@@ -27,8 +27,11 @@ class _AnswerSerializer( serializers.ModelSerializer ):
     """ Сериализатор для Answers """
 
     creator = serializers.SlugRelatedField( slug_field = 'username', read_only = True)
+    parent_answer = serializers.PrimaryKeyRelatedField( queryset = Phors.objects.all() )
+    # child_answers = _ChildAnswerSerializer
 
     class Meta:
+        # list_serializer_class = _FilterAnswerSerializer
         model = Answers
         fields = ( 'creator', 'date_of_creation', 'is_correct', 'content', 'parent_answer', 'pk' )
 
@@ -37,7 +40,7 @@ class CreateAnswerSerializer( serializers.ModelSerializer ):
 
     class Meta:
         model = Answers 
-        fields = ( 'content', 'parent_answer', )
+        fields = ( 'content', 'parent_answer',)
 
     def create(self, validated_data):
         slug_of_phor = self.context['view'].kwargs.get( 'slug_of_phor' )
@@ -92,9 +95,8 @@ class CreatePhorSerializer( serializers.ModelSerializer ):
 
     def create(self, validated_data):
         slug_of_theme = self.context['view'].kwargs.get( 'slug_of_theme' )
-        pk_of_user_of_client = self.context['view'].kwargs.get( 'pk_of_user_of_client' )
 
-        validated_data['creator'] = get_user_of_client_by_pk( pk_of_user_of_client )
+        validated_data['creator'] = self.context['view'].kwargs.get( 'user_of_client' )
 
         validated_data['slug'] = text_to_slug( validated_data['title'] )
         validated_data['theme'] = get_theme_by_slug( slug_of_theme )
